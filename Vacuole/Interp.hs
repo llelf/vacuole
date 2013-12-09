@@ -29,7 +29,7 @@ vacuumise s = do res <- H.runInterpreter interp
       interp :: H.Interpreter Vac
       interp = do
         H.loadModules ["Vacuole.Prelude"]
-        H.setImports ["GHC.Vacuum", "Data.IntMap.Strict", "Vacuole.Prelude"]
+        H.setImports ["GHC.Vacuum", "Data.IntMap.Strict", "Vacuole.Prelude", "Prelude"]
         H.interpret ("vacuum (" ++ s ++ ")") (H.as :: Vac)
 
 
