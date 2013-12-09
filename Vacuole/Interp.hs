@@ -34,7 +34,4 @@ vacuumise s = do res <- H.runInterpreter interp
 
 
 e = vacuum (1::Integer)
-a=A
-
-data Con = A|B|C
 
