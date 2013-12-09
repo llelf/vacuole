@@ -1,0 +1,23 @@
+
+
+svg {
+    width: 700px;
+    height: 700px;
+}
+
+circle.c {
+    fill: url(#pat);
+    stroke: #268bd2;
+    stroke-width: 3px;
+    filter: url(#light);
+}
+
+
+
+
+line {
+    stroke: #586e75;
+    stroke-width: 3px;
+}
+
+

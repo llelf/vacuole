@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+
+  <meta charset="utf-8"/>
+  <style>
+    @import "svg.css";
+  </style>
+
+  <body>
+
+    <svg id="snap">
+      <defs>
+	<pattern id="pat"
+		 patternContentUnits="userSpaceOnUse"
+		 patternUnits="userSpaceOnUse" width="10" height="10">
+	  <image xlink:href="lisp.png" x="0" y="0" width="50" height="50"/>
+	</pattern>
+	<pattern id="pat1" patternUnits="objectBoundingBox" width="1" height="1">
+	  <image xlink:href="pats.png" x="0" y="0" width="1" height="1"/>
+	</pattern>
+
+	<!-- <filter id="light"> -->
+	<!--   <fePointLight x="300" y="300" z="100"/> -->
+	<!-- </filter> -->
+
+	<!-- <filter id="bg"> -->
+	<!--   <feTile/> -->
+	<!-- </filter> -->
+
+	<filter id="shadow">
+	  <feGaussianBlur in="SourceAlpha" stdDeviation="1"/>
+	  <feOffset dx="1" dy="1" result="offsetblur"/>
+	  <feMerge> 
+	    <feMergeNode/>
+	    <feMergeNode in="SourceGraphic"/>
+	  </feMerge>
+	</filter>
+
+
+      </defs>
+    </svg>
+
+    <script src="snap.svg.js"></script>
+    <script src="d3.min.js"></script>
+    <script src="snap.js"></script>
+    <!-- <script src="v.js"></script> -->
+  </body>
+
+</html>
