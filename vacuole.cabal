@@ -51,7 +51,7 @@ executable vacuole
   main-is:             Vacuole/Serve.hs
   
   -- Modules included in this executable, other than Main.
-  other-modules:       Vacuole.Interp
+  other-modules:       Vacuole.Interp, Vacuole.Prelude, Vacuole.View
   
   -- LANGUAGE extensions used by modules in this package.
   other-extensions:    StandaloneDeriving, DeriveDataTypeable, TupleSections, BangPatterns, UnboxedTuples, MagicHash, CPP, RankNTypes, RecordWildCards, PostfixOperators, TypeSynonymInstances
@@ -59,7 +59,7 @@ executable vacuole
   -- Other library packages from which modules are imported.
   build-depends:       base >=4.6, hint >=0.3, containers >=0.5,
                        scotty >=0.5, wai-middleware-static >=0.3,
-                       text >=0.11,
+                       text >=0.11, aeson >= 0.6.2,
                        ghc-prim >=0.3, vacuum >= 2.1.0.1
   
   -- Directories containing source files.
