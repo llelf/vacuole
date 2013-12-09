@@ -15,7 +15,8 @@ main = scotty 5555 $ do
                         e <- body
                         let t = decodeUtf8 e
                         b <- liftIO $ boo $ unpack t
-                        text $ "fuck you, " <> t <> ", " <> decodeUtf8 b
+                        json b
+
 
 
 

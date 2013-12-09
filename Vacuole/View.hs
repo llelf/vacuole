@@ -1,4 +1,4 @@
-{-# LANGUAGE TupleSections, TemplateHaskell #-}
+{-# LANGUAGE TupleSections, TemplateHaskell, OverloadedStrings #-}
 module Vacuole.View (boo) where
 
 import Data.Char
@@ -21,12 +21,12 @@ deriveToJSON defaultOptions ''Colour
 deriveToJSON defaultOptions ''Node
 
 
-graph p = (nodes p, links p)
+graph p = object ["nodes" .= nodes p, "links" .= links p]
 
 boo s = do vvv <- vacuumise s
            return $ case vvv of
-                      Left e -> BS.pack $ show e
-                      Right v -> encode $ graph v
+                      Left e -> object [ "error" .= show e ]
+                      Right v -> graph v
 
 
 
@@ -37,11 +37,8 @@ toJS nd @HNode {nodeLits=lits, nodeInfo=info}
     | n=="C#" = node (show $ chr $ fromIntegral $ head $ lits) "char"
     | n==":"  = node "(:)" ""
     | n=="[]"  = node "[]" ""
+    | otherwise = node n "other"
     where n = nodeName nd
-
--- data E = A{a::Int} | B{b::Int}
---          deriving Show
-
 
 
 
