@@ -14,6 +14,7 @@ import Data.Either
 import Control.Monad
 import Data.Aeson
 
+import Vacuole.Prelude
 
 type Vac = IntMap HNode
 
@@ -27,7 +28,8 @@ vacuumise s = do res <- H.runInterpreter interp
     where
       interp :: H.Interpreter Vac
       interp = do
-        H.setImports ["GHC.Vacuum", "Data.IntMap.Strict", "Valuole.Prelude"]
+        H.loadModules ["Vacuole.Prelude"]
+        H.setImports ["GHC.Vacuum", "Data.IntMap.Strict", "Vacuole.Prelude"]
         H.interpret ("vacuum (" ++ s ++ ")") (H.as :: Vac)
 
 
