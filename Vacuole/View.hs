@@ -20,6 +20,9 @@ data Node = Node {
 deriveToJSON defaultOptions ''Colour
 deriveToJSON defaultOptions ''Node
 
+data Link = Link { from, to :: Int }
+deriveToJSON defaultOptions ''Link
+
 
 graph p = object ["nodes" .= nodes p, "links" .= links p]
 
@@ -44,6 +47,7 @@ toJS nd @HNode {nodeLits=lits, nodeInfo=info}
 
 nodes = map toJS . elems
 
-links = concat . elems . mapWithKey (\k (HNode {nodePtrs=ls}) -> map (k,) ls)
+links = concat . elems . mapWithKey f
+    where f k (HNode {nodePtrs=ls}) = map (\to -> Link k to) ls
 
 
