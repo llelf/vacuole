@@ -5,27 +5,31 @@ var S = Snap('#snap');
 
 // var l = S.line(100,100,100,200);
 
+function canvasClear()
+{
+  Snap.selectAll('#snap > *').forEach(function(e) { e.remove() });
+}
+
+// var graph = { nodes: [{name:'12'}, {name:'b',size:23,color:'red'}, {name:'c'}, {name:'ы'}],
+// 	      links: [{from:0,to:1},{from:1,to:2},{from:2,to:3}] };
+
 
 var width=500;
 var height=500;
 var F = d3.layout.force().size([width,height]);
-
 F.linkStrength(0.5);
 F.charge(-700);
 
-var graph = { nodes: [{name:'12'}, {name:'b',size:23,color:'red'}, {name:'c'}, {name:'ы'}],
-	      links: [{from:0,to:1},{from:1,to:2},{from:2,to:3}] };
-
+function drawGraph (graph)
+{
+  var linksG = S.g();
+  var nodesG = S.g().attr({'font-family':'verdana'});
 
 
 //S.circle(200,200,100).attr({fill:'url(#pat)'});
-S.rect(0,0,width,height).attr({fill:'url(#pat)'});
+//S.rect(0,0,width,height).attr({fill:'url(#pat)'});
 
 //S.circle(200,200,100);
-
-
-var linksG = S.g();
-var nodesG = S.g().attr({'font-family':'verdana'});
 
 
 var nodes = [];
@@ -55,8 +59,6 @@ for (var i = 0; i < graph.links.length; i++)
 }
 
 
-
-
 F.nodes(nodes);
 F.links(links);
 
@@ -70,9 +72,15 @@ F.on('tick', function() {
 
 
 F.drag();
-
 F.start();
+}
 
 
-
+d3.json('/vac')
+  .post('123123123123123123123123123123123123123123',
+	  function (a,b,c) {
+	    console.log('ajax', a,b,c);
+	    canvasClear();
+	    drawGraph(b);
+	  });
 
