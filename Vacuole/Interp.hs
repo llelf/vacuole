@@ -21,6 +21,15 @@ type Vac = IntMap HNode
 deriving instance Typeable HNode
 
 
+
+imports = [
+ "GHC.Vacuum",
+ "Data.IntMap.Strict",
+ "Vacuole.Prelude",
+ "Prelude",
+ "Data.List"
+ ]
+
 vacuumise s = do res <- H.runInterpreter interp
                  return $ case res of
                     Left err -> Left $ show err
@@ -29,9 +38,8 @@ vacuumise s = do res <- H.runInterpreter interp
       interp :: H.Interpreter Vac
       interp = do
         H.loadModules ["Vacuole.Prelude"]
-        H.setImports ["GHC.Vacuum", "Data.IntMap.Strict", "Vacuole.Prelude", "Prelude"]
+        H.setImports imports
         H.interpret ("vacuum (" ++ s ++ ")") (H.as :: Vac)
-
 
 
 
