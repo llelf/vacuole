@@ -1,4 +1,12 @@
 
+$base01:  "#586e75";
+$base00:  "#657b83";
+$blue:    "#268bd2";
+$green:   "#859900";
+
+$bg: $base00;
+
+
 
 svg {
     width: 700px;
@@ -8,7 +16,7 @@ svg {
 circle.c {
     /* fill: url(#pat); */
     fill: white;
-    stroke: #268bd2;
+    stroke: $blue;
     stroke-width: 3px;
     /* filter: url(#light); */
 }
