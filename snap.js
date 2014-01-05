@@ -7,7 +7,7 @@ var S = Snap('#snap');
 
 function canvasClear()
 {
-  Snap.selectAll('#snap > *').forEach(function(e) { e.remove() });
+  Snap.selectAll('#snap > :not(defs)').forEach(function(e) { e.remove() });
 }
 
 // var graph = { nodes: [{name:'12'}, {name:'b',size:23,color:'red'}, {name:'c'}, {name:'ы'}],
