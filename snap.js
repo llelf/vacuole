@@ -26,53 +26,53 @@ function drawGraph (graph)
   var nodesG = S.g().attr({'font-family':'verdana'});
 
 
-//S.circle(200,200,100).attr({fill:'url(#pat)'});
-//S.rect(0,0,width,height).attr({fill:'url(#pat)'});
+  //S.circle(200,200,100).attr({fill:'url(#pat)'});
+  //S.rect(0,0,width,height).attr({fill:'url(#pat)'});
 
-//S.circle(200,200,100);
-
-
-var nodes = [];
-for (var i = 0; i < graph.nodes.length; i++)
-{
-  var n = graph.nodes[i];
-  nodes[i] = S.g();
-  var c = S.circle(0,0,n.size||17).attr({'class':'c'});
-  var t = S.text(0,0,n.name).attr({'text-anchor':'middle', 'alignment-baseline':'middle'});
-  nodes[i].append(c).append(t);
-  nodes[i].name = n.name;
-//  nodes[i].drag();
-
-  nodesG.append(nodes[i]);
-}
+  //S.circle(200,200,100);
 
 
-var links = [];
-for (var i = 0; i < graph.links.length; i++)
-{
-  links[i] = S.line(0,0,10,10);
-  var l = graph.links[i];
-  links[i].source = nodes[l.from], links[i].target = nodes[l.to];
-//  links[i].drag();
+  var nodes = [];
+  for (var i = 0; i < graph.nodes.length; i++)
+  {
+    var n = graph.nodes[i];
+    nodes[i] = S.g();
+    var c = S.circle(0,0,n.size||17).attr({'class':'c'});
+    var t = S.text(0,0,n.name).attr({'text-anchor':'middle', 'alignment-baseline':'middle'});
+    nodes[i].append(c).append(t);
+    nodes[i].name = n.name;
+    //  nodes[i].drag();
 
-  linksG.append(links[i]);
-}
-
-
-F.nodes(nodes);
-F.links(links);
-
-F.on('tick', function() {
-  //console.log(a);
-  nodes.map (function(n) { n.attr({transform: 'translate('+n.x+','+n.y+')'}) });
-  links.map (function(l) { l.attr({x1:l.source.x, y1:l.source.y,
-				   x2:l.target.x, y2:l.target.y}) });
-
-});
+    nodesG.append(nodes[i]);
+  }
 
 
-F.drag();
-F.start();
+  var links = [];
+  for (var i = 0; i < graph.links.length; i++)
+  {
+    links[i] = S.line(0,0,10,10).attr({'marker-end':arrow});
+    var l = graph.links[i];
+    links[i].source = nodes[l.from], links[i].target = nodes[l.to];
+    //  links[i].drag();
+
+    linksG.append(links[i]);
+  }
+
+
+  F.nodes(nodes);
+  F.links(links);
+
+  F.on('tick', function() {
+    //console.log(a);
+    nodes.map (function(n) { n.attr({transform: 'translate('+n.x+','+n.y+')'}) });
+    links.map (function(l) { l.attr({x1:l.source.x, y1:l.source.y,
+				     x2:l.target.x, y2:l.target.y}) });
+
+  });
+
+
+  F.drag();
+  F.start();
 }
 
 
