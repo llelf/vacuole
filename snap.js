@@ -17,7 +17,7 @@ function canvasClear()
 var width=500;
 var height=500;
 var F = d3.layout.force().size([width,height]);
-F.linkStrength(0.5);
+F.linkStrength(function(l) {return l.strength || 0.5});
 F.charge(-700);
 
 function drawGraph (graph)
@@ -53,6 +53,8 @@ function drawGraph (graph)
     links[i] = S.line(0,0,10,10).attr({'marker-end':arrow});
     var l = graph.links[i];
     links[i].source = nodes[l.from], links[i].target = nodes[l.to];
+    if (links[i].target.name == '[]')
+      links[i].strength = 0.1;
     //  links[i].drag();
 
     linksG.append(links[i]);
