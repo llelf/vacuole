@@ -76,11 +76,18 @@ F.start();
 }
 
 
-d3.json('/vac')
-  .post('123123123123123123123123123123123123123123',
+function newInput ()
+{
+  var txt = d3.select('textarea').property('value');
+  console.log(txt);
+
+  d3.json('/vac')
+    .post(txt,
 	  function (a,b,c) {
 	    console.log('ajax', a,b,c);
 	    canvasClear();
 	    drawGraph(b);
 	  });
+}
 
+newInput();

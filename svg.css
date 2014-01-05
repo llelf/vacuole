@@ -6,10 +6,11 @@ svg {
 }
 
 circle.c {
-    fill: url(#pat);
+    /* fill: url(#pat); */
+    fill: white;
     stroke: #268bd2;
     stroke-width: 3px;
-    filter: url(#light);
+    /* filter: url(#light); */
 }
 
 

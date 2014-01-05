@@ -8,6 +8,11 @@
 
   <body>
 
+    <textarea type="text">["hi","wrld"]</textarea>
+
+    <button onclick="newInput()">Go</button>
+
+    <div>
     <svg id="snap">
       <defs>
 	<pattern id="pat1"
@@ -35,10 +40,11 @@
 	    <feMergeNode in="SourceGraphic"/>
 	  </feMerge>
 	</filter>
-
-
       </defs>
+
+
     </svg>
+    </div>
 
     <script src="snap.svg.js"></script>
     <script src="d3.min.js"></script>
