@@ -46,6 +46,9 @@ function drawGraph (graph)
     nodesG.append(nodes[i]);
   }
 
+  var arrow = S.path('M0,-5 L15,0 L0,5')
+    .attr({stroke:'red', fill:'green',transform:'scale(0.5)'})
+    .marker(0,-5,15,10,15,0);
 
   var links = [];
   for (var i = 0; i < graph.links.length; i++)
