@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Main where
 
 import Haste
@@ -52,8 +53,8 @@ drawGraph = ffi "(function (g) { return drawGraph(g) })"
 
 newInput = do v <- inputValue
               print v
-              jsonRequest_ POST (toJSString "/vac")
-                               [(toJSString "expr",v)] $ \d -> do
+              jsonRequest_ POST "/vac"
+                               [("expr",v)] $ \d -> do
                 print d
                 canvasClear
                 let Just g = d
