@@ -12,9 +12,9 @@ import Vacuole.View
 main = scotty 5555 $ do
          middleware static
          post "/vac" $ do
-                        e <- body
-                        let t = decodeUtf8 e
-                        b <- liftIO $ boo $ unpack t
+--                        e <- body
+                        t <- param "expr"
+                        b <- liftIO $ boo t
                         json b
 
 
