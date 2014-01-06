@@ -2,7 +2,21 @@ module Main where
 
 import Haste
 import Haste.Prim
+import Haste.JSON
+import Haste.Ajax
 import Vacuole.Snap
+import Vacuole.View.Types
+
+class FromJSON a where
+    parseJSON :: JSON -> a
+
+
+instance FromJSON Node where
+    parseJSON json = Node 10 Red "?" "?"
+
+instance FromJSON Link where
+    parseJSON json = Link 0 0
+
 
 jsMain' :: IO ()
 jsMain' = ffi "alert('hi')"
@@ -15,7 +29,7 @@ globalSet var = ffi $ "(function(x){" ++ var ++ "=x; return {}})"
 
 
 
-paper :: IO (Ptr Paper)
+paper :: IO Paper
 paper = ffi "Paper"
 
 -- paperId :: Ptr Paper -> IO String
@@ -25,12 +39,32 @@ paper = ffi "Paper"
 -- circle = ffi "(function (x,y,r){return Paper.circle(x,y,r)})"
 
 
-main = do globalSet "baz" 2
-          putStrLn "ok."
-          p <- paper
-          c <- circle 50 50 10 p
-          t <- text 50 50 (toJSString "text") p
-          g p >>= elemAppend c >>= elemAppend t
+node = decodeJSON (toJSString "{'a':2}")
+
+inputValue :: IO JSString
+inputValue = ffi "d3.select('textarea').property('value')"
+
+canvasClear :: IO ()
+canvasClear = ffi "canvasClear()"
+
+drawGraph :: JSString -> IO ()
+drawGraph = ffi "(function (g) { return drawGraph(g) })"
+
+newInput = do v <- inputValue
+              print v
+              jsonRequest_ POST (toJSString "/vac")
+                               [(toJSString "expr",v)] $ \d -> do
+                print d
+                canvasClear
+                let Just g = d
+                drawGraph $ encodeJSON g
+
+
+main = do newInput
+
+
+
+
 
 
 

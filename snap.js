@@ -8,11 +8,10 @@ var Paper = Snap('#snap');
 
 function canvasClear()
 {
+  console.log('clear');
   Snap.selectAll('#snap > :not(defs)').forEach(function(e) { e.remove() });
+  return {};
 }
-
-// var graph = { nodes: [{name:'12'}, {name:'b',size:23,color:'red'}, {name:'c'}, {name:'ы'}],
-// 	      links: [{from:0,to:1},{from:1,to:2},{from:2,to:3}] };
 
 
 var width=500;
@@ -21,8 +20,12 @@ var Force = d3.layout.force().size([width,height]);
 Force.linkStrength(function(l) {return l.strength || 0.5});
 Force.charge(-700);
 
-function drawGraph (graph)
+function drawGraph (graphS)
 {
+  var graph = JSON.parse (graphS);
+
+  console.log('draw',graph);
+
   var linksG = Paper.g();
   var nodesG = Paper.g().attr({'font-family':'verdana'});
 
@@ -78,21 +81,27 @@ function drawGraph (graph)
 
   Force.drag();
   Force.start();
+
+  return {};
 }
 
 
-function newInput ()
-{
-  var txt = d3.select('textarea').property('value');
-  console.log(txt);
+// function newInput ()
+// {
+//   var txt = d3.select('textarea').property('value');
+//   console.log(txt);
 
-  d3.json('/vac')
-    .post(txt,
-	  function (a,b,c) {
-	    console.log('ajax', a,b,c);
-	    canvasClear();
-	    drawGraph(b);
-	  });
-}
+//   d3.json('/vac')
+//     .post({expr: '2+2'},
+// 	  function (a,b,c) {
+// 	    console.log('ajax', a,b,c);
+// 	    canvasClear();
+// 	    drawGraph(b);
+// 	  });
+// }
 
-newInput();
+// function jsMain()
+// {
+//   newInput();
+// }
+
