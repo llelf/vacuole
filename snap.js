@@ -20,35 +20,51 @@ var Force = d3.layout.force().size([width,height]);
 Force.linkStrength(function(l) {return l.strength || 0.5});
 Force.charge(-700);
 
-function drawGraph (graphS)
+function drawGraph (graphS,nodesS)
 {
   var graph = JSON.parse (graphS);
 
-  console.log('draw',graph);
+  console.log('draw',graphS);
+  console.log('nodes',nodesS);
 
   var linksG = Paper.g();
   var nodesG = Paper.g().attr({'font-family':'verdana'});
 
+  var nodes = [];
+  for (var p = nodesS; p[0] != 0;)
+  {
+    var el = p[1], tail = p[2];
+    nodes.push(el[1]);
+    p = tail;
+  }
 
+  for (var i = 0; i < nodes.length; i++)
+  {
+    nodes[i].name = '?'+i;
+    nodesG.append(nodes[i]);
+  }
+
+
+  console.log('nodes',nodes);
+  
   //Paper.circle(200,200,100).attr({fill:'url(#pat)'});
   //Paper.rect(0,0,width,height).attr({fill:'url(#pat)'});
 
-  //Paper.circle(200,200,100);
-
-
+/*
   var nodes = [];
   for (var i = 0; i < graph.nodes.length; i++)
   {
     var n = graph.nodes[i];
-    nodes[i] = Paper.g();
-    var c = Paper.circle(0,0,n.size||17).attr({'class':'c'});
-    var t = Paper.text(0,0,n.name).attr({'text-anchor':'middle', 'alignment-baseline':'middle'});
-    nodes[i].append(c).append(t);
+    nodes[i] = A(mkNode, [0])[1]; //Paper.g();
+    // var c = Paper.circle(0,0,n.size||17).attr({'class':'c'});
+    // var t = Paper.text(0,0,n.name).attr({'text-anchor':'middle', 'alignment-baseline':'middle'});
+    // nodes[i].append(c).append(t);
+
     nodes[i].name = n.name;
     //  nodes[i].drag();
 
     nodesG.append(nodes[i]);
-  }
+  }*/
 
   var arrow = Paper.path('M0,-5 L15,0 L0,5')
     .attr({stroke:'red', fill:'green',transform:'scale(0.5)'})
@@ -85,23 +101,4 @@ function drawGraph (graphS)
   return {};
 }
 
-
-// function newInput ()
-// {
-//   var txt = d3.select('textarea').property('value');
-//   console.log(txt);
-
-//   d3.json('/vac')
-//     .post({expr: '2+2'},
-// 	  function (a,b,c) {
-// 	    console.log('ajax', a,b,c);
-// 	    canvasClear();
-// 	    drawGraph(b);
-// 	  });
-// }
-
-// function jsMain()
-// {
-//   newInput();
-// }
 
