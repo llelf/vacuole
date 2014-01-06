@@ -54,20 +54,21 @@ foreign import ccall drawGraph
     :: JSString -> Ptr [Element] -> IO ()
 
 
-mkNode :: Int -> IO Element
-mkNode n = do
+mkNode :: Node -> IO Element
+mkNode node = do
   p <- paper
-  text (0,0) (show n) p
+  text (0,0) (name node) p
 
 newInput = do v <- inputValue
-              nodes <- mapM mkNode [1..3]
               print v
               jsonRequest_ POST "/vac"
                                [("expr",v)] $ \d -> do
                 print d
                 canvasClear
                 let Just g = d
-                drawGraph (encodeJSON g) (toPtr nodes)
+                let nodes = parseNodes $ g!"nodes"
+                nodesE <- mapM mkNode nodes
+                drawGraph (encodeJSON g) (toPtr nodesE)
 
 
 main = newInput
