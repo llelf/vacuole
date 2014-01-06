@@ -14,10 +14,16 @@ class FromJSON a where
 
 
 instance FromJSON Node where
-    parseJSON json = Node 10 Red "?" "?"
+    parseJSON o = Node (round size) Red (fromJSStr name) (fromJSStr desc)
+        where Num size = o!"size"
+              Str name = o!"name"
+              Str desc = o!"desc"
+
 
 instance FromJSON Link where
-    parseJSON json = Link 0 0
+    parseJSON o = Link (round from) (round to)
+        where Num from = o!"from"
+              Num to = o!"to"
 
 
 jsMain' :: IO ()
@@ -32,6 +38,10 @@ globalSet var = ffi $ "(function(x){" ++ var ++ "=x; return {}})"
 
 paper :: IO Paper
 paper = ffi "Paper"
+
+
+parseNodes :: JSON -> [Node]
+parseNodes (Arr ns) = map parseJSON ns
 
 
 inputValue :: IO JSString
