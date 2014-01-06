@@ -1,9 +1,10 @@
-var S = Snap('#snap');
 
-// var c1 = S.circle(100,100,10);
-// var c2 = S.circle(100,200,10);
+var Paper = Snap('#snap');
 
-// var l = S.line(100,100,100,200);
+// var c1 = Paper.circle(100,100,10);
+// var c2 = Paper.circle(100,200,10);
+
+// var l = Paper.line(100,100,100,200);
 
 function canvasClear()
 {
@@ -16,29 +17,29 @@ function canvasClear()
 
 var width=500;
 var height=500;
-var F = d3.layout.force().size([width,height]);
-F.linkStrength(function(l) {return l.strength || 0.5});
-F.charge(-700);
+var Force = d3.layout.force().size([width,height]);
+Force.linkStrength(function(l) {return l.strength || 0.5});
+Force.charge(-700);
 
 function drawGraph (graph)
 {
-  var linksG = S.g();
-  var nodesG = S.g().attr({'font-family':'verdana'});
+  var linksG = Paper.g();
+  var nodesG = Paper.g().attr({'font-family':'verdana'});
 
 
-  //S.circle(200,200,100).attr({fill:'url(#pat)'});
-  //S.rect(0,0,width,height).attr({fill:'url(#pat)'});
+  //Paper.circle(200,200,100).attr({fill:'url(#pat)'});
+  //Paper.rect(0,0,width,height).attr({fill:'url(#pat)'});
 
-  //S.circle(200,200,100);
+  //Paper.circle(200,200,100);
 
 
   var nodes = [];
   for (var i = 0; i < graph.nodes.length; i++)
   {
     var n = graph.nodes[i];
-    nodes[i] = S.g();
-    var c = S.circle(0,0,n.size||17).attr({'class':'c'});
-    var t = S.text(0,0,n.name).attr({'text-anchor':'middle', 'alignment-baseline':'middle'});
+    nodes[i] = Paper.g();
+    var c = Paper.circle(0,0,n.size||17).attr({'class':'c'});
+    var t = Paper.text(0,0,n.name).attr({'text-anchor':'middle', 'alignment-baseline':'middle'});
     nodes[i].append(c).append(t);
     nodes[i].name = n.name;
     //  nodes[i].drag();
@@ -46,14 +47,14 @@ function drawGraph (graph)
     nodesG.append(nodes[i]);
   }
 
-  var arrow = S.path('M0,-5 L15,0 L0,5')
+  var arrow = Paper.path('M0,-5 L15,0 L0,5')
     .attr({stroke:'red', fill:'green',transform:'scale(0.5)'})
     .marker(0,-5,15,10,15,0);
 
   var links = [];
   for (var i = 0; i < graph.links.length; i++)
   {
-    links[i] = S.line(0,0,10,10).attr({'marker-end':arrow});
+    links[i] = Paper.line(0,0,10,10).attr({'marker-end':arrow});
     var l = graph.links[i];
     links[i].source = nodes[l.from], links[i].target = nodes[l.to];
     if (links[i].target.name == '[]')
@@ -63,11 +64,10 @@ function drawGraph (graph)
     linksG.append(links[i]);
   }
 
+  Force.nodes(nodes);
+  Force.links(links);
 
-  F.nodes(nodes);
-  F.links(links);
-
-  F.on('tick', function() {
+  Force.on('tick', function() {
     //console.log(a);
     nodes.map (function(n) { n.attr({transform: 'translate('+n.x+','+n.y+')'}) });
     links.map (function(l) { l.attr({x1:l.source.x, y1:l.source.y,
@@ -76,8 +76,8 @@ function drawGraph (graph)
   });
 
 
-  F.drag();
-  F.start();
+  Force.drag();
+  Force.start();
 }
 
 
