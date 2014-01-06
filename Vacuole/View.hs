@@ -1,28 +1,18 @@
-{-# LANGUAGE TupleSections, TemplateHaskell, OverloadedStrings #-}
+{-# LANGUAGE TupleSections, OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 module Vacuole.View (boo) where
 
 import Data.Char
 import Data.IntMap.Strict (elems,mapWithKey)
-import Data.Aeson.TH
-import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as BS
 import Vacuole.Interp
-
-
-data Colour = Green | Blue | Red
-              deriving Show
-
-
-data Node = Node {
-      size::Int, colour::Colour, name::String, desc::String
-} deriving Show
+import Vacuole.View.Types
+import Data.Aeson.TH
+import Data.Aeson
 
 deriveToJSON defaultOptions ''Colour
 deriveToJSON defaultOptions ''Node
-
-data Link = Link { from, to :: Int }
 deriveToJSON defaultOptions ''Link
-
 
 graph p = object ["nodes" .= nodes p, "links" .= links p]
 
