@@ -74,9 +74,13 @@ mkLink link = do
   line (0,0) (0,0) p
 
 
-  -- // var arrow = Paper.path('M0,-5 L15,0 L0,5')
-  -- //   .attr({stroke:'red', fill:'green',transform:'scale(0.5)'})
-  -- //   .marker(0,-5,15,10,15,0);
+
+
+arrowDef = do
+  p <- paper
+  a <- path "M0,-5 L15,0 L0,5" p
+  setAttrs a [(Stroke,"red"), (Fill,"green"), (Transform,"scale(0.25)")]
+  marker (0,-5) (15,10) (15,0) a
 
 
 draw nodesE linksE = do
