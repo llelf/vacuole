@@ -7,7 +7,9 @@ import Haste.JSON
 import Haste.Ajax
 import Vacuole.Snap
 import Vacuole.View.Types
-
+import Control.Monad
+import Control.Applicative
+import qualified Data.IntMap as Map
 
 class FromJSON a where
     parseJSON :: JSON -> a
@@ -53,7 +55,7 @@ canvasClear :: IO ()
 canvasClear = ffi "canvasClear()"
 
 foreign import ccall drawGraph
-    :: JSString -> Ptr [Element] -> Ptr [Element] -> JSAny -> IO ()
+    :: Ptr [Element] -> Ptr [Element] -> JSAny -> IO ()
 
 
 mkNode :: Node -> IO Element
@@ -72,6 +74,22 @@ mkLink link = do
   line (0,0) (0,0) p
 
 
+  -- // var arrow = Paper.path('M0,-5 L15,0 L0,5')
+  -- //   .attr({stroke:'red', fill:'green',transform:'scale(0.5)'})
+  -- //   .marker(0,-5,15,10,15,0);
+
+
+draw nodesE linksE = do
+  p <- paper
+  linksG <- g p
+  nodesG <- g p
+  setAttrs linksG [(Class,"g-links")]
+  setAttrs nodesG [(Class,"g-nodes")]
+  forM_ nodesE (flip append nodesG)
+  forM_ linksE (flip append linksG)
+
+
+
 newInput = do v <- inputValue
               print v
               jsonRequest_ POST "/vac"
@@ -88,8 +106,9 @@ newInput = do v <- inputValue
                      map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) links
 
                 nodesE <- mapM mkNode nodes
-                linesE <- mapM mkLink links
-                drawGraph (encodeJSON g) (toPtr nodesE) (toPtr linesE)
+                linksE <- mapM mkLink links
+                draw nodesE linksE
+                drawGraph (toPtr nodesE) (toPtr linksE)
                           (jsonToJS fromTo)
 
 
