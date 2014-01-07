@@ -29,6 +29,7 @@ instance Marshal Attr where
 
 foreign import cpattern "Snap(%1)" snap :: JSString -> IO Paper
 foreign import cpattern "%4.circle(%1,%2,%3)" circle_ :: Int -> Int -> Int -> Paper -> IO Element
+foreign import cpattern "%5.line(%1,%2,%3,%4)" line_ :: Int->Int->Int->Int->Paper->IO Element
 foreign import cpattern "%1.g()" g :: Paper -> IO Element
 foreign import cpattern "%2.append(%1)" append :: Element -> Element -> IO Element
 foreign import cpattern "%4.text(%1,%2,%3)" text_ :: Int -> Int -> JSString -> Paper -> IO Element
@@ -40,6 +41,8 @@ circle (x,y) r = circle_ x y r
 text :: (Int,Int) -> String -> Paper -> IO Element
 text (x,y) t = text_ x y (toJSString t)
 
+line :: (Int,Int) -> (Int,Int) -> Paper -> IO Element
+line (x,y) (x',y') = line_ x y x' y'
 
 foreign import cpattern "JSON.parse(%1)" jsParseJSON :: JSString -> JSAny
 
