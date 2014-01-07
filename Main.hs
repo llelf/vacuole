@@ -43,6 +43,8 @@ paper = ffi "Paper"
 parseNodes :: JSON -> [Node]
 parseNodes (Arr ns) = map parseJSON ns
 
+parseLinks :: JSON -> [Link]
+parseLinks (Arr ls) = map parseJSON ls
 
 inputValue :: IO JSString
 inputValue = ffi "d3.select('textarea').property('value')"
@@ -51,7 +53,7 @@ canvasClear :: IO ()
 canvasClear = ffi "canvasClear()"
 
 foreign import ccall drawGraph
-    :: JSString -> Ptr [Element] -> IO ()
+    :: JSString -> Ptr [Element] -> Ptr [Element] -> JSAny -> IO ()
 
 
 mkNode :: Node -> IO Element
@@ -64,6 +66,12 @@ mkNode node = do
 
 
 
+mkLink :: Link -> IO Element
+mkLink link = do
+  p <- paper
+  line (0,0) (0,0) p
+
+
 newInput = do v <- inputValue
               print v
               jsonRequest_ POST "/vac"
@@ -72,9 +80,18 @@ newInput = do v <- inputValue
                 canvasClear
                 let Just g = d
                 let nodes = parseNodes $ g!"nodes"
+                    links = parseLinks $ g!"links"
+
+                let nodesMap = Map.fromList $ zip [1..] nodes
+
+                let fromTo = Arr $
+                     map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) links
+
                 nodesE <- mapM mkNode nodes
-                drawGraph (encodeJSON g) (toPtr nodesE)
+                linesE <- mapM mkLink links
+                drawGraph (encodeJSON g) (toPtr nodesE) (toPtr linesE)
+                          (jsonToJS fromTo)
 
 
-main = newInput
-
+main = do globalSet "xxx" $ Arr []
+          newInput
