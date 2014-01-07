@@ -57,7 +57,12 @@ foreign import ccall drawGraph
 mkNode :: Node -> IO Element
 mkNode node = do
   p <- paper
-  text (0,0) (name node) p
+  c <- circle (0,0) (size node) p >>= flip setAttrs [(Class,"c")]
+  t <- text (0,0) (name node) p >>= flip setAttrs [(TextAnchor,"middle"),
+                                                   (AlignmentBaseline,"middle")]
+  g p >>= append c >>= append t
+
+
 
 newInput = do v <- inputValue
               print v
