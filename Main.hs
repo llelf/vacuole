@@ -68,10 +68,12 @@ mkNode node = do
 
 
 
-mkLink :: Link -> IO Element
-mkLink link = do
+mkLink :: Link -> Element -> IO Element
+mkLink link arrow = do
   p <- paper
-  line (0,0) (0,0) p
+  l <- line (0,0) (0,0) p
+  setAttrPtr (MarkerEnd,toPtr arrow) l
+
 
 
 
@@ -109,8 +111,10 @@ newInput = do v <- inputValue
                 let fromTo = Arr $
                      map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) links
 
+                arrow <- arrowDef
+
                 nodesE <- mapM mkNode nodes
-                linksE <- mapM mkLink links
+                linksE <- mapM (flip mkLink arrow) links
                 draw nodesE linksE
                 drawGraph (toPtr nodesE) (toPtr linksE)
                           (jsonToJS fromTo)
