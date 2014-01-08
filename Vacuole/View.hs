@@ -11,7 +11,6 @@ import qualified GHC.Vacuum.ClosureType as Closure
 import Data.Aeson.TH
 import Data.Aeson
 
-deriveToJSON defaultOptions ''Colour
 deriveToJSON defaultOptions ''Kind
 deriveToJSON defaultOptions ''Node
 deriveToJSON defaultOptions ''Link
@@ -24,16 +23,14 @@ boo s = do vvv <- vacuumise s
                       Right v -> graph v
 
 
-normalSize = 20
-
-node n t = Node {size=normalSize, colour=Blue, kind=Vanilla, name=n, desc=t}
+node n t = Node {kind=Vanilla, name=n, desc=t}
 
 isFun = Closure.isFun . itabType
 
 toJS nd @HNode {nodeLits=lits, nodeInfo=info}
     | n=="S#" || n=="I#" = node (show $ head $ lits) "int"
     | n=="C#" = node (show $ chr $ fromIntegral $ head $ lits) "char"
-    | n==":"  = Node 10 Red Vanilla n ""
+    | n==":"  = Node Vanilla n ""
     | n=="[]"  = node "[]" ""
     | isFun info = node "λ" ""
     | itabType info == Closure.ARR_WORDS = node "" "" -- {kind=ArrWords}

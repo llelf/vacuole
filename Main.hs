@@ -18,9 +18,8 @@ class FromJSON a where
 
 
 instance FromJSON Node where
-    parseJSON o = Node (round size) Red Vanilla (fromJSStr name) (fromJSStr desc)
-        where Num size = o!"size"
-              Str name = o!"name"
+    parseJSON o = Node Vanilla (fromJSStr name) (fromJSStr desc)
+        where Str name = o!"name"
               Str desc = o!"desc"
 
 
@@ -59,13 +58,13 @@ mkNode node | k==Vanilla  = vanillaNode node
 
 memNode node = do
   p <- paper
-  cs <- forM [1..3] $ \x -> circle (x*10,x*10) (size node) p
+  cs <- forM [1..3] $ \x -> circle (x*10,x*10) 20 p
   g <- g p
   foldM (flip append) g cs
 
 vanillaNode node = do
   p <- paper
-  c <- circle (0,0) (size node) p >>= setAttrs [(Class,"c")]
+  c <- circle (0,0) 20 p >>= setAttrs [(Class,"c")]
   t <- text (0,0) (name node) p >>= setAttrs [(TextAnchor,"middle"),
                                               (AlignmentBaseline,"middle")]
   g p >>= append c >>= append t
