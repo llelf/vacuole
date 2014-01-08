@@ -19,6 +19,7 @@ instance Marshal Paper
 data Attr = AlignmentBaseline|Class|Fill
           |MarkerBegin|MarkerMid|MarkerEnd
           |Scale|Stroke|TextAnchor|Transform
+          |X1|X2|Y1|Y2
             deriving (Show,Read)
 
 camelToLispCase []           = []
