@@ -12,6 +12,10 @@ $bg: $base2;
 
 @import url(http://fonts.googleapis.com/css?family=Oxygen);
 
+.jquery-console-cursor {
+    border-left: solid 2px green;
+}
+
 body {
      background: $bg;
      font-family: 'Oxygen';
