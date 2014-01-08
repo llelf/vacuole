@@ -40,3 +40,15 @@ line {
 }
 
 
+.console {
+
+    div.jquery-console-inner {
+	padding:0.5em;
+        overflow:auto;
+    }
+
+
+    border: 1px solid green;
+    height: 2cm;
+}
+

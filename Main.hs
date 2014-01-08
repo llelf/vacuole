@@ -12,6 +12,7 @@ import Control.Applicative
 import Control.Arrow (second)
 import qualified Data.IntMap as Map
 
+
 class FromJSON a where
     parseJSON :: JSON -> a
 
@@ -29,14 +30,9 @@ instance FromJSON Link where
               Num to = o!"to"
 
 
-jsMain' :: IO ()
-jsMain' = ffi "alert('hi')"
 
-jsMain :: IO ()
-jsMain = ffi "newInput()"
-
-globalSet :: String -> Int -> IO ()
-globalSet var = ffi $ "(function(x){" ++ var ++ "=x; return {}})"
+-- globalSet :: String -> JSON -> IO ()
+-- globalSet var = ffi $ "(function(x){" ++ var ++ "=x; return {}})"
 
 
 paper :: IO Paper
@@ -50,10 +46,10 @@ parseLinks :: JSON -> [Link]
 parseLinks (Arr ls) = map parseJSON ls
 
 inputValue :: IO JSString
-inputValue = ffi "d3.select('textarea').property('value')"
+inputValue = ffi "d3.select('.input').property('value')"
 
-canvasClear :: IO ()
-canvasClear = ffi "canvasClear()"
+
+foreign import ccall canvasClear :: IO ()
 
 foreign import ccall drawGraph
     :: Ptr [Element] -> Ptr [Element] -> JSAny
@@ -61,6 +57,7 @@ foreign import ccall drawGraph
     -> Ptr (Int->Int->Int->Int->Element->IO ())
     -> IO ()
 
+foreign import ccall initTerm :: Ptr (JSString -> IO Bool) -> IO ()
 
 
 mkNode :: Node -> IO Element
@@ -86,9 +83,12 @@ mkLink link arrow = do
 arrowDef = do
   p <- paper
   a <- path "M0,-5 L15,0 L0,5" p
-  setAttrs [(Stroke,"red"), (Fill,"green"), (Transform,"scale(0.333)")] a
-  marker (0,-5) (15,10) (10,0) a
-
+  setAttrs [(Stroke,"red"), (Fill,"green"),
+            (Transform, scale s)] a
+  marker (0,-5) (15,10) ((19+15)`div`3,0) a
+      where
+        alen = 15
+        s = 1/3
 
 draw nodesE linksE = do
   p <- paper
@@ -118,7 +118,11 @@ tickL sx sy tx ty link = do
 
 
 
-newInput = do v <- inputValue
+defaultInput = "[1..3]"
+
+
+newInput :: JSString -> IO Bool
+newInput v = do
               print v
               jsonRequest_ POST "/vac"
                                [("expr",v)] $ \d -> do
@@ -143,6 +147,9 @@ newInput = do v <- inputValue
                           (toPtr $ tickN nodesMap)
                           (toPtr tickL)
 
+              return True
 
-main = newInput
+
+main = initTerm (toPtr newInput)
+
 
