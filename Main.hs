@@ -61,9 +61,9 @@ foreign import ccall drawGraph
 mkNode :: Node -> IO Element
 mkNode node = do
   p <- paper
-  c <- circle (0,0) (size node) p >>= flip setAttrs [(Class,"c")]
-  t <- text (0,0) (name node) p >>= flip setAttrs [(TextAnchor,"middle"),
-                                                   (AlignmentBaseline,"middle")]
+  c <- circle (0,0) (size node) p >>= setAttrs [(Class,"c")]
+  t <- text (0,0) (name node) p >>= setAttrs [(TextAnchor,"middle"),
+                                              (AlignmentBaseline,"middle")]
   g p >>= append c >>= append t
 
 
@@ -79,16 +79,16 @@ mkLink link = do
 arrowDef = do
   p <- paper
   a <- path "M0,-5 L15,0 L0,5" p
-  setAttrs a [(Stroke,"red"), (Fill,"green"), (Transform,"scale(0.25)")]
-  marker (0,-5) (15,10) (15,0) a
+  setAttrs [(Stroke,"red"), (Fill,"green"), (Transform,"scale(0.333)")] a
+  marker (0,-5) (15,10) (10,0) a
 
 
 draw nodesE linksE = do
   p <- paper
   linksG <- g p
   nodesG <- g p
-  setAttrs linksG [(Class,"g-links")]
-  setAttrs nodesG [(Class,"g-nodes")]
+  setAttrs [(Class,"g-links")] linksG
+  setAttrs [(Class,"g-nodes")] nodesG
   forM_ nodesE (flip append nodesG)
   forM_ linksE (flip append linksG)
 
@@ -116,5 +116,5 @@ newInput = do v <- inputValue
                           (jsonToJS fromTo)
 
 
-main = do globalSet "xxx" $ Arr []
-          newInput
+main = newInput
+
