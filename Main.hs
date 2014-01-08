@@ -55,7 +55,9 @@ canvasClear :: IO ()
 canvasClear = ffi "canvasClear()"
 
 foreign import ccall drawGraph
-    :: Ptr [Element] -> Ptr [Element] -> JSAny -> IO ()
+    :: Ptr [Element] -> Ptr [Element] -> JSAny
+    -> Ptr (JSON -> Element -> IO ()) -> IO ()
+
 
 
 mkNode :: Node -> IO Element
@@ -95,6 +97,13 @@ draw nodesE linksE = do
   forM_ linksE (flip append linksG)
 
 
+tick :: Map.IntMap Node -> JSON -> Element -> IO ()
+tick nodes param node = do
+  setAttr (Transform, translate (round x) (round y)) node
+  return ()
+      where
+        Num x = param!"x"
+        Num y = param!"y"
 
 newInput = do v <- inputValue
               print v
@@ -117,7 +126,7 @@ newInput = do v <- inputValue
                 linksE <- mapM (flip mkLink arrow) links
                 draw nodesE linksE
                 drawGraph (toPtr nodesE) (toPtr linksE)
-                          (jsonToJS fromTo)
+                          (jsonToJS fromTo) (toPtr $ tick nodesMap)
 
 
 main = newInput

@@ -30,7 +30,7 @@ function hslistToJS (list)
 }
 
 
-function drawGraph (nodesS,linksS,fromTo)
+function drawGraph (nodesS,linksS,fromTo,tick)
 {
   console.log('draw');
 
@@ -57,9 +57,14 @@ function drawGraph (nodesS,linksS,fromTo)
   Force.links(linksF);
 
   Force.on('tick', function() {
+
+    //A(tick, [0]);
+
     nodesF.map (function(f) {
       var n=nodesF[f.id];
-      nodes[f.id].attr({transform: 'translate('+n.x+','+n.y+')'});
+      //nodes[f.id].attr({transform: 'translate('+n.x+','+n.y+')'});
+      A(tick, [toHS(n), [0,nodes[f.id]], 0]);
+
     });
 
     linksF.map (function(l) {
