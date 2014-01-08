@@ -5,12 +5,12 @@ import Haste
 import Haste.Prim
 import Haste.JSON
 import Haste.Ajax
-import Vacuole.Snap
-import Vacuole.View.Types
 import Control.Monad
-import Control.Applicative
 import Control.Arrow (second)
 import qualified Data.IntMap as Map
+
+import Vacuole.Snap
+import Vacuole.View.Types
 
 
 class FromJSON a where
@@ -30,11 +30,6 @@ instance FromJSON Link where
               Num to = o!"to"
 
 
-
--- globalSet :: String -> JSON -> IO ()
--- globalSet var = ffi $ "(function(x){" ++ var ++ "=x; return {}})"
-
-
 paper :: IO Paper
 paper = ffi "Paper"
 
@@ -44,9 +39,6 @@ parseNodes (Arr ns) = map parseJSON ns
 
 parseLinks :: JSON -> [Link]
 parseLinks (Arr ls) = map parseJSON ls
-
-inputValue :: IO JSString
-inputValue = ffi "d3.select('.input').property('value')"
 
 
 foreign import ccall canvasClear :: IO ()
@@ -127,6 +119,7 @@ newInput v = do
               jsonRequest_ POST "/vac"
                                [("expr",v)] $ \d -> do
                 print d
+                putStrLn "will clear now"
                 canvasClear
                 let Just g = d
                 let nodes = parseNodes $ g!"nodes"
