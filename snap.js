@@ -9,11 +9,27 @@ function canvasClear()
 }
 
 
-var width=500;
+
+function initTerm (handle)
+{
+  $('.console').console({
+    promptLabel: '> ',
+    commandValudate: function (x) { return x!='' },
+    commandHandle: function (x) { console.log('js',x); return A(handle, [[0,x], 0]) },
+    autofocus:true,
+    promptHistory:true
+  });
+}
+
+
+
+
+
+var width=800;
 var height=500;
 var Force = d3.layout.force().size([width,height]);
 Force.linkStrength(function(l) {return l.strength || 0.5});
-Force.charge(-700);
+Force.charge(-1000);
 
 
 function hslistToJS (list)
