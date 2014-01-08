@@ -1,9 +1,12 @@
+{-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
 module Vacuole.Snap where
 import Haste
 import Haste.Prim
 import Haste.JSON
 import Data.Char
+import Control.Monad
+import Haste.Foreign
 
 data Paper_
 data Element_
@@ -34,7 +37,8 @@ foreign import cpattern "%2.path(%1)" path_ :: JSString->Paper->IO Element
 foreign import cpattern "%1.g()" g :: Paper -> IO Element
 foreign import cpattern "%2.append(%1)" append :: Element -> Element -> IO Element
 foreign import cpattern "%4.text(%1,%2,%3)" text_ :: Int -> Int -> JSString -> Paper -> IO Element
-foreign import cpattern "%1.attr(%2)" setAttrs_ :: Element -> JSAny -> IO Element
+foreign import cpattern "(function(){var e={};e[%1]=E(E(%2)[1]);return %3.attr(e)})()" setAttr_ :: JSString -> JSString -> Element -> IO Element
+foreign import cpattern "(function(){var e={};e[%1]=E(E(%2)[1]);return %3.attr(e)})()" setAttrPtr_ :: JSString -> Ptr a -> Element -> IO Element
 foreign import cpattern "%7.marker(%1,%2,%3,%4,%5,%6)" marker_ :: Int->Int->Int->Int->Int->Int->Element->IO Element
 
 circle :: (Int,Int) -> Int -> Paper -> IO Element
@@ -60,9 +64,13 @@ jsonToJS :: JSON -> JSAny
 jsonToJS = jsParseJSON . encodeJSON
 
 
-setAttrs :: Element -> [(Attr,String)] -> IO Element
-setAttrs e as = do
-  setAttrs_ e (jsonToJS ajson)
-  return e
-    where ajson = Dict $ map (\(k,v) -> (toJSStr $ camelToLispCase $ show k, Str $ toJSStr v)) as
+attrToJSStr = toJSStr . camelToLispCase . show
 
+setAttr :: (Attr,String) -> Element -> IO Element
+setAttr (k,v) = setAttr_ (attrToJSStr k) (toJSStr v)
+
+setAttrs :: [(Attr,String)] -> Element -> IO Element
+setAttrs as e = foldM (\e kv -> setAttr kv e) e as
+
+setAttrPtr :: (Attr,Ptr a) -> Element -> IO Element
+setAttrPtr (k,v) = setAttrPtr_ (attrToJSStr k) v
