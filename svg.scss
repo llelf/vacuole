@@ -3,19 +3,29 @@ $base01:  #586e75;
 $base00:  #657b83;
 $blue:    #268bd2;
 $green:   #859900;
+$base0:   #839496;
+$base1:   #93a1a1;
+$base2:   #eee8d5;
+$base3:   #fdf6e3;
 
-$bg: $base00;
+$bg: $base2;
 
 
+body {
+     background: $bg;
+}
 
 svg {
     width: 700px;
     height: 700px;
 }
 
+circle {
+   fill: $bg;
+}
+
 circle.c {
     /* fill: url(#pat); */
-    fill: white;
     stroke: $blue;
     stroke-width: 3px;
     /* filter: url(#light); */
