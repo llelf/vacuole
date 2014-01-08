@@ -18,7 +18,7 @@ class FromJSON a where
 
 
 instance FromJSON Node where
-    parseJSON o = Node (round size) Red (fromJSStr name) (fromJSStr desc)
+    parseJSON o = Node (round size) Red Vanilla (fromJSStr name) (fromJSStr desc)
         where Num size = o!"size"
               Str name = o!"name"
               Str desc = o!"desc"
@@ -53,7 +53,17 @@ foreign import ccall initTerm :: Ptr (JSString -> IO Bool) -> IO ()
 
 
 mkNode :: Node -> IO Element
-mkNode node = do
+mkNode node | k==Vanilla  = vanillaNode node
+            | k==ArrWords = memNode node
+    where k = kind node
+
+memNode node = do
+  p <- paper
+  cs <- forM [1..3] $ \x -> circle (x*10,x*10) (size node) p
+  g <- g p
+  foldM (flip append) g cs
+
+vanillaNode node = do
   p <- paper
   c <- circle (0,0) (size node) p >>= setAttrs [(Class,"c")]
   t <- text (0,0) (name node) p >>= setAttrs [(TextAnchor,"middle"),
@@ -67,7 +77,6 @@ mkLink link arrow = do
   p <- paper
   l <- line (0,0) (0,0) p
   setAttrPtr (MarkerEnd,toPtr arrow) l
-
 
 
 

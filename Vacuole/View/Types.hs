@@ -1,12 +1,17 @@
-module Vacuole.View.Types (Colour(..),Node(..),Link(..)) where
+module Vacuole.View.Types (Colour(..),Kind(..),
+                           Node(..),Link(..)) where
 
 
 data Colour = Green | Blue | Red
               deriving Show
 
+data Kind = Vanilla | ArrWords
+          deriving (Eq,Show)
+
 
 data Node = Node {
-      size::Int, colour::Colour, name::String, desc::String
+      size::Int, colour::Colour, kind::Kind,
+      name::String, desc::String
 } deriving Show
 
 
