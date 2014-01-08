@@ -30,7 +30,7 @@ function hslistToJS (list)
 }
 
 
-function drawGraph (nodesS,linksS,fromTo,tick)
+function drawGraph (nodesS,linksS,fromTo,tickN,tickL)
 {
   console.log('draw');
 
@@ -63,15 +63,21 @@ function drawGraph (nodesS,linksS,fromTo,tick)
     nodesF.map (function(f) {
       var n=nodesF[f.id];
       //nodes[f.id].attr({transform: 'translate('+n.x+','+n.y+')'});
-      A(tick, [toHS(n), [0,nodes[f.id]], 0]);
+      A(tickN, [toHS(n), [0,nodes[f.id]], 0]);
 
     });
 
     linksF.map (function(l) {
       var src = nodesF[l.source.id];
       var dst = nodesF[l.target.id];
-      links[l.id].attr({x1:src.x, y1:src.y,
-			x2:dst.x, y2:dst.y})
+
+      var e = links[l.id];
+      // links[l.id].attr({x1:src.x, y1:src.y,
+      // 			x2:dst.x, y2:dst.y})
+
+      A(tickL, [[0,src.x], [0,src.y], [0,dst.x], [0,dst.y],
+		[0,e], 0]);
+
     });
 
   });

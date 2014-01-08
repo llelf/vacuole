@@ -9,6 +9,7 @@ import Vacuole.Snap
 import Vacuole.View.Types
 import Control.Monad
 import Control.Applicative
+import Control.Arrow (second)
 import qualified Data.IntMap as Map
 
 class FromJSON a where
@@ -56,7 +57,9 @@ canvasClear = ffi "canvasClear()"
 
 foreign import ccall drawGraph
     :: Ptr [Element] -> Ptr [Element] -> JSAny
-    -> Ptr (JSON -> Element -> IO ()) -> IO ()
+    -> Ptr (JSON -> Element -> IO ())
+    -> Ptr (Int->Int->Int->Int->Element->IO ())
+    -> IO ()
 
 
 
@@ -97,13 +100,23 @@ draw nodesE linksE = do
   forM_ linksE (flip append linksG)
 
 
-tick :: Map.IntMap Node -> JSON -> Element -> IO ()
-tick nodes param node = do
+tickN :: Map.IntMap Node -> JSON -> Element -> IO ()
+tickN nodes param node = do
   setAttr (Transform, translate (round x) (round y)) node
   return ()
       where
         Num x = param!"x"
         Num y = param!"y"
+
+
+tickL :: Int->Int->Int->Int -> Element -> IO ()
+tickL sx sy tx ty link = do
+  ($link) $ setAttrs $ map (second (toJSString.show)) [(X1,x1), (Y1,y1), (X2,x2), (Y2,y2)]
+  return ()
+    where
+      [x1,y1,x2,y2]=[sx,sy,tx,ty]
+
+
 
 newInput = do v <- inputValue
               print v
@@ -126,7 +139,9 @@ newInput = do v <- inputValue
                 linksE <- mapM (flip mkLink arrow) links
                 draw nodesE linksE
                 drawGraph (toPtr nodesE) (toPtr linksE)
-                          (jsonToJS fromTo) (toPtr $ tick nodesMap)
+                          (jsonToJS fromTo)
+                          (toPtr $ tickN nodesMap)
+                          (toPtr tickL)
 
 
 main = newInput
