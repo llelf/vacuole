@@ -148,14 +148,17 @@ showGraph g = do
                     links = parseLinks $ g!"links"
 
                 let nodesMap = Map.fromList $ zip [1..] nodes
+                    nNodes = length nodes
+                    links' = filter sane links
+                    sane (Link x y) = x < nNodes && y < nNodes
 
                 let fromTo = Arr $
-                     map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) links
+                     map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) links'
 
                 arrow <- arrowDef
 
                 nodesE <- mapM mkNode nodes
-                linksE <- mapM (flip mkLink arrow) links
+                linksE <- mapM (flip mkLink arrow) links'
                 draw nodesE linksE
                 drawGraph (toPtr nodesE) (toPtr linksE)
                           (jsonToJS fromTo)
