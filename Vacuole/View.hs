@@ -27,9 +27,12 @@ node n t = Node {kind=Vanilla, name=n, desc=t}
 
 isFun = Closure.isFun . itabType
 
+showChr c | isPrint c = ['\'',c,'\'']
+          | otherwise = show c
+
 toJS nd @HNode {nodeLits=lits, nodeInfo=info}
     | n=="S#" || n=="I#" = node (show $ head $ lits) "int"
-    | n=="C#" = node (show $ chr $ fromIntegral $ head $ lits) "char"
+    | n=="C#" = node (showChr $ chr $ fromIntegral $ head $ lits) "char"
     | n==":"  = Node Vanilla n ""
     | n=="[]"  = node "[]" ""
     | isFun info = node "λ" ""
