@@ -126,11 +126,24 @@ newInput :: JSString -> IO Bool
 newInput v = do
               print v
               jsonRequest_ POST "/vac"
-                               [("expr",v)] $ \d -> do
-                print d
-                putStrLn "will clear now"
+                               [("expr",v)] $ \res -> do
+                print res
                 canvasClear
-                let Just g = d
+                case res of
+                  Nothing -> showError "Ajax error"
+                  Just dat ->
+                      case dat~>"error" of
+                        Just err -> showError err
+                        Nothing  -> showGraph dat
+
+              return True
+
+
+showGraph :: JSON -> IO ()
+showError (Str err) = alert $ fromJSStr err
+
+
+showGraph g = do
                 let nodes = parseNodes $ g!"nodes"
                     links = parseLinks $ g!"links"
 
@@ -149,7 +162,6 @@ newInput v = do
                           (toPtr $ tickN nodesMap)
                           (toPtr tickL)
 
-              return True
 
 
 main = initTerm (toPtr newInput)
