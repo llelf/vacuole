@@ -57,6 +57,13 @@ marker (x,y) (w,h) (xref,yref) = marker_ x y w h xref yref
 foreign import cpattern "JSON.parse(%1)" jsParseJSON :: JSString -> JSAny
 
 
+translate :: Int -> Int -> JSString
+translate x y = toJSString $ "translate("++show x++","++show y++")"
+
+scale :: Double -> JSString
+scale x = toJSString $ "scale("++show x++")"
+
+
 jsonToJS :: JSON -> JSAny
 jsonToJS = jsParseJSON . encodeJSON
 
