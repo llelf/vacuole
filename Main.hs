@@ -57,7 +57,7 @@ memNode = do
   cs <- forM [3,2..0] $ \x ->
           circle (x*3,x*3) 20 p >>= setAttrs [(Class,"c")]
   g <- g p
-  foldM (flip append) g cs
+  foldM append g cs
 
 vanillaNode = genericNode 20
 
@@ -66,7 +66,7 @@ genericNode size str = do
   c <- circle (0,0) 1 p >>= setAttrs [(Class,"c")]
   t <- text (0,0) str p >>= setAttrs [(TextAnchor,"middle"),
                                       (AlignmentBaseline,"middle")]
-  g p >>= append c >>= append t
+  g p >>= flip append c >>= flip append t
 
 
 
@@ -93,10 +93,12 @@ draw nodesE linksE = do
   p <- paper
   linksG <- g p
   nodesG <- g p
+  append outer linksG
+  append outer nodesG
   setAttrs [(Class,"g-links")] linksG
   setAttrs [(Class,"g-nodes")] nodesG
-  forM_ nodesE (flip append nodesG)
-  forM_ linksE (flip append linksG)
+  forM_ nodesE (append nodesG)
+  forM_ linksE (append linksG)
 
 
 tickN :: Map.IntMap Node -> JSON -> Element -> IO ()
