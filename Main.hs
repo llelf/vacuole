@@ -52,9 +52,15 @@ foreign import ccall initTerm :: Ptr (JSString -> IO Bool) -> IO ()
 
 
 mkNode :: Node -> IO Element
-mkNode node | k==Vanilla  = vanillaNode node
+mkNode node | k==Vanilla = vanillaNode node
+            | k==Cons    = consNode node
             | k==ArrWords = memNode node
     where k = kind node
+
+
+
+consNode = genericNode 15
+
 
 memNode node = do
   p <- paper
@@ -62,9 +68,11 @@ memNode node = do
   g <- g p
   foldM (flip append) g cs
 
-vanillaNode node = do
+vanillaNode = genericNode 20
+
+genericNode size node = do
   p <- paper
-  c <- circle (0,0) 20 p >>= setAttrs [(Class,"c")]
+  c <- circle (0,0) size p >>= setAttrs [(Class,"c")]
   t <- text (0,0) (name node) p >>= setAttrs [(TextAnchor,"middle"),
                                               (AlignmentBaseline,"middle")]
   g p >>= append c >>= append t
