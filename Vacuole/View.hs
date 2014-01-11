@@ -15,12 +15,14 @@ deriveToJSON defaultOptions ''Kind
 deriveToJSON defaultOptions ''Node
 deriveToJSON defaultOptions ''Link
 
+
 graph p = object ["nodes" .= nodes p, "links" .= links p]
 
 boo s = do vvv <- vacuumise s
            return $ case vvv of
                       Left e -> object [ "error" .= show e ]
                       Right v -> graph v
+
 
 
 node n t = Node {kind=Vanilla, name=n, desc=t}
@@ -33,10 +35,10 @@ showChr c | isPrint c = ['\'',c,'\'']
 toJS nd @HNode {nodeLits=lits, nodeInfo=info}
     | n=="S#" || n=="I#" = node (show $ head $ lits) "int"
     | n=="C#" = node (showChr $ chr $ fromIntegral $ head $ lits) "char"
-    | n==":"  = Node Vanilla n ""
+    | n==":"  = Node Cons n ""
     | n=="[]"  = node "[]" ""
     | isFun info = node "λ" ""
-    | itabType info == Closure.ARR_WORDS = node "" "" -- {kind=ArrWords}
+    | itabType info == Closure.ARR_WORDS = (node "" "") {kind=ArrWords}
     | otherwise = node n $ show nd
     where n = nodeName nd
 
