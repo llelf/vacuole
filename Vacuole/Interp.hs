@@ -41,6 +41,6 @@ vacuumise s = do res <- H.runInterpreter interp
       interp = do
         H.loadModules ["Vacuole.Prelude"]
         H.setImports imports
-        H.interpret ("vacuum (" ++ s ++ ")") (H.as :: Vacuum)
+        H.interpret ("vacuumTo 10 (" ++ s ++ ")") (H.as :: Vacuum)
 
 
