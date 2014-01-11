@@ -2,8 +2,10 @@ module Vacuole.View.Types (Kind(..),
                            Node(..),Link(..)) where
 
 
-data Kind = Vanilla | ArrWords
-          deriving (Eq,Show)
+data Kind = Vanilla | Cons | ArrWords | Nowhere
+          deriving (Eq,Show,Read)
+
+
 
 
 data Node = Node {
