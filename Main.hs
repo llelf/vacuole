@@ -1,10 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 module Main where
 
 import Haste
 import Haste.Prim
-import Haste.JSON
 import Haste.Ajax
+import Haste.JSON
 import Control.Monad
 import Control.Arrow (second)
 import qualified Data.IntMap as Map
@@ -13,31 +14,17 @@ import Vacuole.Snap
 import Vacuole.View.Types
 
 
-class FromJSON a where
-    parseJSON :: JSON -> a
-
-
-instance FromJSON Node where
-    parseJSON o = Node Vanilla (fromJSStr name) (fromJSStr desc)
-        where Str name = o!"name"
-              Str desc = o!"desc"
-
-
-instance FromJSON Link where
-    parseJSON o = Link (round from) (round to)
-        where Num from = o!"from"
-              Num to = o!"to"
 
 
 paper :: IO Paper
 paper = ffi "Paper"
 
 
-parseNodes :: JSON -> [Node]
-parseNodes (Arr ns) = map parseJSON ns
+-- parseNodes :: JSON -> [Node]
+-- parseNodes (Arr ns) = map parseJSON ns
 
-parseLinks :: JSON -> [Link]
-parseLinks (Arr ls) = map parseJSON ls
+-- parseLinks :: JSON -> [Link]
+-- parseLinks (Arr ls) = map parseJSON ls
 
 
 foreign import ccall canvasClear :: IO ()
@@ -52,12 +39,11 @@ foreign import ccall initTerm :: Ptr (JSString -> IO Bool) -> IO ()
 
 
 mkNode :: Node -> IO Element
-mkNode node | k==Vanilla = vanillaNode node
-            | k==Cons    = consNode node
-            | k==ArrWords = memNode node
-    where k = kind node
+mkNode node = vanillaNode node
 
 
+
+nowhereNode = genericNode 3
 
 consNode = genericNode 15
 
@@ -73,7 +59,7 @@ vanillaNode = genericNode 20
 genericNode size node = do
   p <- paper
   c <- circle (0,0) size p >>= setAttrs [(Class,"c")]
-  t <- text (0,0) (name node) p >>= setAttrs [(TextAnchor,"middle"),
+  t <- text (0,0) "@@@" p >>= setAttrs [(TextAnchor,"middle"),
                                               (AlignmentBaseline,"middle")]
   g p >>= append c >>= append t
 
@@ -132,27 +118,28 @@ defaultInput = "[1..3]"
 newInput :: JSString -> IO Bool
 newInput v = do
               print v
-              jsonRequest_ POST "/vac"
+              textRequest_ POST "/vac"
                                [("expr",v)] $ \res -> do
                 print res
                 canvasClear
                 case res of
                   Nothing -> showError "Ajax error"
                   Just dat ->
-                      case dat~>"error" of
-                        Just err -> showError err
-                        Nothing  -> showGraph dat
+                      case read (fromJSStr dat::String) :: Either String GraphView of
+                        Left err -> showError err
+                        Right graph  -> showGraph graph
 
               return True
 
 
-showGraph :: JSON -> IO ()
-showError (Str err) = alert $ fromJSStr err
+
+showError err = alert err
 
 
 showGraph g = do
-                let nodes = parseNodes $ g!"nodes"
-                    links = parseLinks $ g!"links"
+                let (nodes,links) = g :: GraphView
+
+                print g
 
                 let nodesMap = Map.fromList $ zip [1..] nodes
                     nNodes = length nodes
@@ -173,7 +160,7 @@ showGraph g = do
                           (toPtr tickL)
 
 
-
 main = initTerm (toPtr newInput)
+
 
 
