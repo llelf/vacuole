@@ -3,7 +3,7 @@
 module Vacuole.View (boo) where
 
 import Data.Char
-import Data.IntMap.Strict (elems,mapWithKey)
+import Data.IntMap.Strict (elems,mapWithKey,notMember)
 import qualified Data.ByteString.Lazy.Char8 as BS
 import Vacuole.Interp
 import Vacuole.View.Types
@@ -16,12 +16,15 @@ deriveToJSON defaultOptions ''Node
 deriveToJSON defaultOptions ''Link
 
 
-graph p = object ["nodes" .= nodes p, "links" .= links p]
+jsonGraph g = object ["nodes" .= nodes, "links" .= links]
+    where (nodes,links) = nodesLinks g
 
+
+boo :: String -> IO Value
 boo s = do vvv <- vacuumise s
            return $ case vvv of
                       Left e -> object [ "error" .= show e ]
-                      Right v -> graph v
+                      Right v -> jsonGraph v
 
 
 
@@ -32,6 +35,8 @@ isFun = Closure.isFun . itabType
 showChr c | isPrint c = ['\'',c,'\'']
           | otherwise = show c
 
+
+toJS :: HNode -> Node
 toJS nd @HNode {nodeLits=lits, nodeInfo=info}
     | n=="S#" || n=="I#" = node (show $ head $ lits) "int"
     | n=="C#" = node (showChr $ chr $ fromIntegral $ head $ lits) "char"
@@ -43,10 +48,23 @@ toJS nd @HNode {nodeLits=lits, nodeInfo=info}
     where n = nodeName nd
 
 
+nodesLinks :: Vacuum -> ([Node],[Link])
+nodesLinks graph = (nodes ++ nowheres, links)
+    where nodes = graphNodes graph
+          links = graphLinks graph
+          nowheres = nowhereNodes graph links
 
-nodes = map toJS . elems
 
-links = concat . elems . mapWithKey f
+graphNodes :: Vacuum -> [Node]
+graphNodes graph = map toJS . elems $ graph
+
+nowhereNodes :: Vacuum -> [Link] -> [Node]
+nowhereNodes graph ls = replicate n $ Node Nowhere "nowhere"
+    where n = length . filter (\(Link _ to) -> to `notMember` graph) $ ls
+
+
+graphLinks :: Vacuum -> [Link]
+graphLinks = concat . elems . mapWithKey f
     where f k (HNode {nodePtrs=ls}) = map (\to -> Link k to) ls
 
 
