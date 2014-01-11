@@ -39,28 +39,33 @@ foreign import ccall initTerm :: Ptr (JSString -> IO Bool) -> IO ()
 
 
 mkNode :: Node -> IO Element
-mkNode node = vanillaNode node
+mkNode (Node (Vanilla s) _) = vanillaNode s
+mkNode (Node EmptyList _)  = vanillaNode "[]"
+mkNode (Node ArrWords _) = memNode
+mkNode (Node Cons _) = consNode
+mkNode (Node Fun _)  = vanillaNode "λ"
+mkNode (Node Nowhere _) = nowhereNode
 
 
+nowhereNode = genericNode 3 "xx"
 
-nowhereNode = genericNode 3
-
-consNode = genericNode 15
+consNode = genericNode 15 "(:)"
 
 
-memNode node = do
+memNode = do
   p <- paper
-  cs <- forM [1..3] $ \x -> circle (x*10,x*10) 20 p
+  cs <- forM [3,2..0] $ \x ->
+          circle (x*3,x*3) 20 p >>= setAttrs [(Class,"c")]
   g <- g p
   foldM (flip append) g cs
 
 vanillaNode = genericNode 20
 
-genericNode size node = do
+genericNode size str = do
   p <- paper
-  c <- circle (0,0) size p >>= setAttrs [(Class,"c")]
-  t <- text (0,0) "@@@" p >>= setAttrs [(TextAnchor,"middle"),
-                                              (AlignmentBaseline,"middle")]
+  c <- circle (0,0) 1 p >>= setAttrs [(Class,"c")]
+  t <- text (0,0) str p >>= setAttrs [(TextAnchor,"middle"),
+                                      (AlignmentBaseline,"middle")]
   g p >>= append c >>= append t
 
 
