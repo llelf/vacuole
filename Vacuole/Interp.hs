@@ -1,6 +1,6 @@
 {-# LANGUAGE StandaloneDeriving, DeriveDataTypeable, TupleSections #-}
 module Vacuole.Interp (module GHC.Vacuum,
-                       vacuumise
+                       Vacuum, vacuumise
                       )
     where
 
@@ -16,7 +16,7 @@ import Data.Aeson
 
 import Vacuole.Prelude
 
-type Vac = IntMap HNode
+type Vacuum = IntMap HNode
 
 deriving instance Typeable HNode
 
@@ -30,18 +30,17 @@ imports = [
  "Data.List"
  ]
 
+
+vacuumise :: String -> IO (Either String Vacuum)
 vacuumise s = do res <- H.runInterpreter interp
                  return $ case res of
                     Left err -> Left $ show err
                     Right s -> Right s
     where
-      interp :: H.Interpreter Vac
+      interp :: H.Interpreter Vacuum
       interp = do
         H.loadModules ["Vacuole.Prelude"]
         H.setImports imports
-        H.interpret ("vacuum (" ++ s ++ ")") (H.as :: Vac)
+        H.interpret ("vacuum (" ++ s ++ ")") (H.as :: Vacuum)
 
-
-
-e = vacuum (1::Integer)
 
