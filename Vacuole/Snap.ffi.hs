@@ -17,7 +17,7 @@ type Element = Ptr Element_
 instance Marshal Paper
 
 data Attr = AlignmentBaseline|Class|Fill
-          |MarkerBegin|MarkerMid|MarkerEnd
+          |MarkerEnd|MarkerMid|MarkerStart
           |Scale|Stroke|TextAnchor|Transform
           |X1|X2|Y1|Y2
             deriving (Show,Read)
