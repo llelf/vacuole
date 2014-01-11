@@ -1,8 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
+--module Vacuole.Serve (main) where
+
 import Web.Scotty
 import Network.Wai.Middleware.Static
 import Data.Text.Lazy.Encoding
-import Data.Text.Lazy (unpack)
+import Data.Text.Lazy (pack)
 import Data.Monoid
 import Control.Monad.IO.Class
 
@@ -15,7 +17,8 @@ main = scotty 5555 $ do
 --                        e <- body
                         t <- param "expr"
                         b <- liftIO $ boo t
-                        json b
+                        liftIO $ print (t,b)
+                        text $ pack $ show b
 
 
 

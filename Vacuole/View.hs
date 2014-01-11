@@ -8,27 +8,18 @@ import qualified Data.ByteString.Lazy.Char8 as BS
 import Vacuole.Interp
 import Vacuole.View.Types
 import qualified GHC.Vacuum.ClosureType as Closure
-import Data.Aeson.TH
-import Data.Aeson
 
-deriveToJSON defaultOptions ''Kind
-deriveToJSON defaultOptions ''Node
-deriveToJSON defaultOptions ''Link
+type GraphView = ([Node],[Link])
 
 
-jsonGraph g = object ["nodes" .= nodes, "links" .= links]
-    where (nodes,links) = nodesLinks g
-
-
-boo :: String -> IO Value
+boo :: String -> IO (Either String GraphView)
 boo s = do vvv <- vacuumise s
            return $ case vvv of
-                      Left e -> object [ "error" .= show e ]
-                      Right v -> jsonGraph v
+                      Left e -> Left $ show e
+                      Right v -> Right $ nodesLinks v
 
 
 
-node n t = Node {kind=Vanilla, name=n, desc=t}
 
 isFun = Closure.isFun . itabType
 
@@ -37,18 +28,18 @@ showChr c | isPrint c = ['\'',c,'\'']
 
 
 toJS :: HNode -> Node
-toJS nd @HNode {nodeLits=lits, nodeInfo=info}
-    | n=="S#" || n=="I#" = node (show $ head $ lits) "int"
-    | n=="C#" = node (showChr $ chr $ fromIntegral $ head $ lits) "char"
-    | n==":"  = Node Cons n ""
-    | n=="[]"  = node "[]" ""
-    | isFun info = node "λ" ""
-    | itabType info == Closure.ARR_WORDS = (node "" "") {kind=ArrWords}
-    | otherwise = node n $ show nd
-    where n = nodeName nd
+toJS node@HNode{nodeLits=lits, nodeInfo=info}
+    | n=="S#" || n=="I#" = Node (Vanilla . show . head $ lits) "int"
+    | n=="C#" = Node (Vanilla . showChr . chr . fromIntegral . head $ lits) "char"
+    | n==":"  = Node Cons "(:)"
+    | n=="[]"  = Node EmptyList "[]"
+    | isFun info = Node Fun "λ"
+    | itabType info == Closure.ARR_WORDS = Node ArrWords "arrwords"
+    | otherwise = Node (Vanilla n) "?"
+    where n = nodeName node
 
 
-nodesLinks :: Vacuum -> ([Node],[Link])
+nodesLinks :: Vacuum -> GraphView
 nodesLinks graph = (nodes ++ nowheres, links)
     where nodes = graphNodes graph
           links = graphLinks graph
