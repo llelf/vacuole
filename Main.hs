@@ -8,7 +8,9 @@ import Haste.Ajax
 import Haste.JSON
 import Control.Monad
 import Control.Arrow (second)
+import Control.Applicative
 import qualified Data.IntMap as Map
+import Text.Printf
 
 import Vacuole.Snap
 import Vacuole.View.Types
@@ -73,8 +75,10 @@ genericNode size str = do
 mkLink :: Link -> Element -> IO Element
 mkLink link arrow = do
   p <- paper
-  l <- line (0,0) (0,0) p
-  setAttrPtr (MarkerEnd,toPtr arrow) l
+  l <- path "M0,0" p
+  setAttrs [(StrokeWidth,"3px"), (Stroke,"red")] l
+  setAttrPtr (MarkerMid,toPtr arrow) l
+
 
 
 
@@ -110,12 +114,13 @@ tickN nodes param node = do
         Num y = param!"y"
 
 
-tickL :: Int->Int->Int->Int -> Element -> IO ()
+tickL :: Int -> Int -> Int -> Int -> Element -> IO ()
 tickL sx sy tx ty link = do
-  ($link) $ setAttrs $ map (second (toJSString.show)) [(X1,x1), (Y1,y1), (X2,x2), (Y2,y2)]
+  setAttr (D,d) link
   return ()
     where
-      [x1,y1,x2,y2]=[sx,sy,tx,ty]
+      d = toJSStr $ printf "M%d,%d L%d,%d L%d,%d" sx sy mx my tx ty
+      [mx,my] = (`div` 2) <$> [sx+tx, sy+ty]
 
 
 
