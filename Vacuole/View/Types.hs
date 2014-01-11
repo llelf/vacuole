@@ -1,6 +1,8 @@
-module Vacuole.View.Types (Purpose(..),
+module Vacuole.View.Types (GraphView,Purpose(..),
                            Node(..),Link(..)) where
 
+
+type GraphView = ([Node],[Link])
 
 -- data Kind = Vanilla | Cons | ArrWords | Nowhere
 --           deriving (Eq,Show,Read)
@@ -16,7 +18,7 @@ data Purpose
       deriving (Read,Show,Eq)
 
 data Node = Node Purpose String
-            deriving Show
+            deriving (Read,Show)
 
 
 -- data Node = Node {
@@ -25,4 +27,4 @@ data Node = Node Purpose String
 
 
 data Link = Link { from, to :: Int }
-            deriving Show
+            deriving (Read,Show)

@@ -9,8 +9,6 @@ import Vacuole.Interp
 import Vacuole.View.Types
 import qualified GHC.Vacuum.ClosureType as Closure
 
-type GraphView = ([Node],[Link])
-
 
 boo :: String -> IO (Either String GraphView)
 boo s = do vvv <- vacuumise s
