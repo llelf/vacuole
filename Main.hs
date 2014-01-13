@@ -201,18 +201,15 @@ showGraph g = do
                 print g
 
                 let nodesMap = Map.fromList $ zip [1..] nodes
-                    nNodes = length nodes
-                    links' = filter sane links
-                    sane (Link x y) = x < nNodes && y < nNodes
                     linksMap = Map.fromList $ zip [1..] links
 
                 let fromTo = Arr $
-                     map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) links'
+                     map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) links
 
                 arrow <- arrowDef
 
                 nodesE <- mapM mkNode nodes
-                linksE <- mapM (mkLink nodesMap arrow) links'
+                linksE <- mapM (mkLink nodesMap arrow) links
                 draw nodesE linksE
                 drawGraph (toPtr nodesE) (toPtr linksE)
                           (jsonToJS fromTo)
