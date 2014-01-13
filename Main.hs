@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE ParallelListComp #-}
 module Main where
 
 import Haste
@@ -89,11 +90,10 @@ mkSimpleLink arrow link = do
 mkMultiLink arrow (Multi link dirs) = do
   p <- paper
   gr <- g p
-  -- let n = length dirs
-  -- ps <- sequence $ replicate n $ path "M0,0" p
-  return undefined
+  ps <- sequence $ replicate (length dirs) $ path "M0,0" p
+  forM_ ps $ append gr
+  return $ MultiElem ps gr
 
-  
 
 
 
@@ -150,18 +150,36 @@ mkVec (x,y) = Vec (fromIntegral x) (fromIntegral y)
 toInts :: Vec -> (Int,Int)
 toInts (Vec x y) = (round x, round y)
 
-tickL :: Map.IntMap LinkElem -> Int -> Int -> Int -> Int
-      -> Int -> IO ()
-tickL links ix = tickLink $ links Map.! ix
+tickL :: Map.IntMap HLink -> Map.IntMap LinkElem
+      -> Int
+      -> Int -> Int -> Int -> Int -> IO ()
+tickL links linkEls ix = tickLink (links Map.! ix) (linkEls Map.! ix)
 
-tickLink :: LinkElem -> Int -> Int -> Int -> Int -> IO ()
-tickLink (SingleElem link) sx sy tx ty = do
+tickLink :: HLink -> LinkElem -> Int -> Int -> Int -> Int -> IO ()
+
+tickLink _ (SingleElem link) sx sy tx ty = do
   setAttr (D,d) link
   return ()
     where
---      d0 = toJSStr $ printf "M%d,%d L%d,%d L%d,%d" sx sy mx my tx ty
-      d = toJSStr $ printf "M%d,%d Q%d,%d,%d,%d Q%d,%d,%d,%d"
-                         sx sy cx cy lmx lmy c1x c1y tx ty
+      d = toJSStr $ printf "M%d,%d L%d,%d L%d,%d" sx sy mx my tx ty
+      src = mkVec (sx,sy)
+      dst = mkVec (tx,ty)
+      (mx,my) = toInts $ vecScale 0.5 (src+dst)
+
+
+tickLink (Multi _ dirs) (MultiElem links _) sx sy tx ty
+    = sequence_ [ setAttr (D, toJSStr $ pathSpec' dir) link
+                  | link <- links | dir <- dirs ]
+    where
+      pathSpec' True  = pathSpec src dst
+      pathSpec' False = pathSpec dst src
+      src = (sx,sy)
+      dst = (tx,ty)
+
+pathSpec (sx,sy) (tx,ty)
+    = printf "M%d,%d Q%d,%d,%d,%d Q%d,%d,%d,%d"
+      sx sy cx cy lmx lmy c1x c1y tx ty
+    where
       src = mkVec (sx,sy)
       dst = mkVec (tx,ty)
       mid = vecScale 0.5 (src+dst)
@@ -234,7 +252,7 @@ showGraph g = do
                 drawGraph (toPtr nodesE)
                           (jsonToJS fromTo)
                           (toPtr $ tickN nodesMap)
-                          (toPtr $ tickL linkElems)
+                          (toPtr $ tickL linksMap linkElems)
 
 
 main = initTerm (toPtr newInput)
