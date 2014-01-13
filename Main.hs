@@ -22,19 +22,19 @@ defaultInput = "[1..3]"
 
 newInput :: JSString -> IO Bool
 newInput v = do
-              print v
-              textRequest_ POST "/vac"
-                               [("expr",v)] $ \res -> do
-                print res
-                canvasClear
-                case res of
-                  Nothing -> showError "Ajax error"
-                  Just dat ->
-                      case read (fromJSStr dat::String) :: Either String GraphView of
-                        Left err -> showError err
-                        Right graph  -> showGraph graph
+  print v
+  textRequest_ POST "/vac" [("expr",v)] $ \res ->
+      do
+        print res
+        canvasClear
+        case res of
+          Nothing -> showError "Ajax error"
+          Just dat ->
+                 case read (fromJSStr dat::String) :: Either String GraphView of
+                   Left err -> showError err
+                   Right graph  -> showGraph graph
 
-              return True
+  return True
 
 
 
@@ -46,31 +46,29 @@ linkEnds (Multi link _) = link
 
 
 showGraph g = do
-                let (nodes,links0) = g :: GraphView
-                    links = linksGatherMulti links0
+  let (nodes,links0) = g :: GraphView
+      links = linksGatherMulti links0
 
-                print links
+  print links
 
-                let nodesMap = Map.fromList $ zip [0..] nodes
-                    linksMap = Map.fromList $ zip [0..] links
+  let nodesMap = Map.fromList $ zip [0..] nodes
+      linksMap = Map.fromList $ zip [0..] links
+                 
+  let fromTo = Arr $
+               map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) $ map linkEnds $ links
 
-                let fromTo = Arr $
-                     map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) $ map linkEnds $ links
+  arrow <- arrowDef
 
+  nodesE <- mapM mkNode nodes
+  zoo <- mapM (mkLink nodesMap arrow) links
+  let linkElems = Map.fromList $ zip [0..] zoo
 
-                arrow <- arrowDef
+  print linkElems
 
-                nodesE <- mapM mkNode nodes
-                zoo <- mapM (mkLink nodesMap arrow) links
-                let linkElems = Map.fromList $ zip [0..] zoo
-
-                print linkElems
-
-                draw nodesE linkElems
-                drawGraph (toPtr nodesE)
-                          (jsonToJS fromTo)
-                          (toPtr $ tickN nodesMap)
-                          (toPtr $ tickL linksMap linkElems)
+  draw nodesE linkElems
+  drawGraph (toPtr nodesE) (jsonToJS fromTo)
+            (toPtr $ tickN nodesMap)
+            (toPtr $ tickL linksMap linkElems)
 
 
 main = initTerm (toPtr newInput)
