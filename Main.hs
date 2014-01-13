@@ -12,6 +12,7 @@ import Control.Arrow (second)
 import Control.Applicative
 import qualified Data.IntMap as Map
 import Text.Printf
+import Data.List ((\\))
 
 import Vacuole.Snap
 import Vacuole.View.Types
@@ -170,17 +171,18 @@ tickLink _ (SingleElem link) sx sy tx ty = do
       (mx,my) = toInts $ vecScale 0.5 (src+dst)
 
 
-tickLink (Multi _ dirs) _ _ _ _ _ | length dirs /= 2
-    = alert "Multilink /= 2, please report" >> error "rrrrr"
-
 tickLink (Multi _ dirs) (MultiElem links _) sx sy tx ty
     = sequence_ [ setAttr (D, toJSStr $ pathSpec' f dir) link
-                  | link <- links | dir <- dirs | f <- [1,-1] ]
+                  | link <- links | dir <- dirs | f <- fs (length dirs) ]
     where
       pathSpec' f True  = pathSpec f src dst
       pathSpec' f False = pathSpec (-f) src dst
       src = (sx,sy)
       dst = (tx,ty)
+
+fs n | odd n     = [-n2..n2]
+     | otherwise = fs (n+1) \\ [0]
+    where n2 = n `div` 2
 
 pathSpec f (sx,sy) (tx,ty)
     = printf "M%d,%d Q%d,%d,%d,%d Q%d,%d,%d,%d"
@@ -190,7 +192,7 @@ pathSpec f (sx,sy) (tx,ty)
       dst = mkVec (tx,ty)
       mid = vecScale 0.5 (src+dst)
       dir = mid - src
-      dirN = vecScale (0.77*f) $ norm dir
+      dirN = vecScale (0.77 * fromIntegral f) $ norm dir
       (lmx,lmy) = toInts $ mid + dirN
       out = -dir + dirN
 
