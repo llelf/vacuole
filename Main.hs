@@ -170,16 +170,19 @@ tickLink _ (SingleElem link) sx sy tx ty = do
       (mx,my) = toInts $ vecScale 0.5 (src+dst)
 
 
+tickLink (Multi _ dirs) _ _ _ _ _ | length dirs /= 2
+    = alert "Multilink /= 2, please report" >> error "rrrrr"
+
 tickLink (Multi _ dirs) (MultiElem links _) sx sy tx ty
-    = sequence_ [ setAttr (D, toJSStr $ pathSpec' dir) link
-                  | link <- links | dir <- dirs ]
+    = sequence_ [ setAttr (D, toJSStr $ pathSpec' f dir) link
+                  | link <- links | dir <- dirs | f <- [1,-1] ]
     where
-      pathSpec' True  = pathSpec src dst
-      pathSpec' False = pathSpec dst src
+      pathSpec' f True  = pathSpec f src dst
+      pathSpec' f False = pathSpec (-f) src dst
       src = (sx,sy)
       dst = (tx,ty)
 
-pathSpec (sx,sy) (tx,ty)
+pathSpec f (sx,sy) (tx,ty)
     = printf "M%d,%d Q%d,%d,%d,%d Q%d,%d,%d,%d"
       sx sy cx cy lmx lmy c1x c1y tx ty
     where
@@ -187,7 +190,7 @@ pathSpec (sx,sy) (tx,ty)
       dst = mkVec (tx,ty)
       mid = vecScale 0.5 (src+dst)
       dir = mid - src
-      dirN = vecScale 0.77 $ norm dir
+      dirN = vecScale (0.77*f) $ norm dir
       (lmx,lmy) = toInts $ mid + dirN
       out = -dir + dirN
 
