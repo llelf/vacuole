@@ -80,17 +80,20 @@ mkLink nodeMap arrow (Single link) = mkSimpleLink arrow link
 mkLink nodeMap arrow hlink@Multi{}  = mkMultiLink arrow hlink
 
 
+linkPath pap arrow = do
+  l <- path "M0,0" pap >>= setAttr (Class,"link")
+  setAttrPtr (MarkerMid, toPtr arrow) l
+  return l
+
 mkSimpleLink arrow link = do
   p <- paper
-  l <- path "M0,0" p
-  setAttr (Class,"link") l
-  setAttrPtr (MarkerMid,toPtr arrow) l
+  l <- linkPath p arrow
   return $ SingleElem l
 
 mkMultiLink arrow (Multi link dirs) = do
   p <- paper
   gr <- g p
-  ps <- sequence $ replicate (length dirs) $ path "M0,0" p
+  ps <- sequence $ replicate (length dirs) $ linkPath p arrow
   forM_ ps $ append gr
   return $ MultiElem ps gr
 
