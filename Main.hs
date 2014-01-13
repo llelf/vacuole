@@ -25,9 +25,9 @@ paper = ffi "Paper"
 foreign import ccall canvasClear :: IO ()
 
 foreign import ccall drawGraph
-    :: Ptr [Element] -> Ptr [Element] -> JSAny
+    :: Ptr [Element] -> JSAny
     -> Ptr (JSON -> Element -> IO ())
-    -> Ptr (Int->Int->Int->Int->Int->Element->IO ())
+    -> Ptr (Int->Int->Int->Int->Int->IO ())
     -> IO ()
 
 foreign import ccall initTerm :: Ptr (JSString -> IO Bool) -> IO ()
@@ -65,13 +65,18 @@ genericNode size str = do
 
 
 
-mkLink :: Map.IntMap Node -> Element -> HLink -> IO Element
-mkLink nodeMap arrow link
-    | n == 1    = mkSimpleLink arrow link
---    | otherwise = mkMultiLink arrow link
-    where
-      n = 1
+data LinkElem = SingleElem Element
+              | MultiElem [Element] Element
+                deriving Show
 
+
+linkOuterElem (SingleElem e) = e
+linkOuterElem (MultiElem _ e) = e
+
+
+mkLink :: Map.IntMap Node -> Element -> HLink -> IO LinkElem
+mkLink nodeMap arrow (Single link) = mkSimpleLink arrow link
+mkLink nodeMap arrow hlink@Multi{}  = mkMultiLink arrow hlink
 
 
 mkSimpleLink arrow link = do
@@ -79,9 +84,15 @@ mkSimpleLink arrow link = do
   l <- path "M0,0" p
   setAttr (Class,"link") l
   setAttrPtr (MarkerMid,toPtr arrow) l
+  return $ SingleElem l
 
--- mkMultiLink arrow link = do
---   p <- paper
+mkMultiLink arrow (Multi link dirs) = do
+  p <- paper
+  gr <- g p
+  -- let n = length dirs
+  -- ps <- sequence $ replicate n $ path "M0,0" p
+  return undefined
+
   
 
 
@@ -95,7 +106,9 @@ arrowDef = do
         alen = 15
         s = 1/3
 
-draw nodesE linksE = do
+draw :: [Element] -> Map.IntMap LinkElem -> IO ()
+draw nodesE linkElems = do
+  let linksE = Map.elems linkElems
   p <- paper
   outer <- g p
   linksG <- g p
@@ -105,7 +118,8 @@ draw nodesE linksE = do
   setAttrs [(Class,"g-links")] linksG
   setAttrs [(Class,"g-nodes")] nodesG
   forM_ nodesE (append nodesG)
-  forM_ linksE (append linksG)
+  forM_ linksE (append linksG . linkOuterElem)
+
 
 
 tickN :: Map.IntMap Node -> JSON -> Element -> IO ()
@@ -136,9 +150,12 @@ mkVec (x,y) = Vec (fromIntegral x) (fromIntegral y)
 toInts :: Vec -> (Int,Int)
 toInts (Vec x y) = (round x, round y)
 
-tickL :: Map.IntMap HLink -> Int -> Int -> Int -> Int
-      -> Int -> Element -> IO ()
-tickL links sx sy tx ty ix link = do
+tickL :: Map.IntMap LinkElem -> Int -> Int -> Int -> Int
+      -> Int -> IO ()
+tickL links ix = tickLink $ links Map.! ix
+
+tickLink :: LinkElem -> Int -> Int -> Int -> Int -> IO ()
+tickLink (SingleElem link) sx sy tx ty = do
   setAttr (D,d) link
   return ()
     where
@@ -198,21 +215,26 @@ showGraph g = do
 
                 print g
 
-                let nodesMap = Map.fromList $ zip [1..] nodes
-                    linksMap = Map.fromList $ zip [1..] links
+                let nodesMap = Map.fromList $ zip [0..] nodes
+                    linksMap = Map.fromList $ zip [0..] links
 
                 let fromTo = Arr $
                      map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) $ map linkEnds $ links
 
+
                 arrow <- arrowDef
 
                 nodesE <- mapM mkNode nodes
-                linksE <- mapM (mkLink nodesMap arrow) links
-                draw nodesE linksE
-                drawGraph (toPtr nodesE) (toPtr linksE)
+                zoo <- mapM (mkLink nodesMap arrow) links
+                let linkElems = Map.fromList $ zip [0..] zoo
+
+                print linkElems
+
+                draw nodesE linkElems
+                drawGraph (toPtr nodesE)
                           (jsonToJS fromTo)
                           (toPtr $ tickN nodesMap)
-                          (toPtr $ tickL linksMap)
+                          (toPtr $ tickL linkElems)
 
 
 main = initTerm (toPtr newInput)

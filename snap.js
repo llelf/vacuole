@@ -46,7 +46,7 @@ function hslistToJS (list)
 }
 
 
-function drawGraph (nodesS,linksS,fromTo,tickN,tickL)
+function drawGraph (nodesS,fromTo,tickN,tickL)
 {
   console.log('draw');
 
@@ -58,7 +58,7 @@ function drawGraph (nodesS,linksS,fromTo,tickN,tickL)
     nodesF.push({id:i});
   }
 
-  var links = hslistToJS(linksS);
+  //var links = hslistToJS(linksS);
   var linksF = [];
   for (var i = 0; i < fromTo.length; i++)
   {
@@ -68,6 +68,9 @@ function drawGraph (nodesS,linksS,fromTo,tickN,tickL)
     l.id = i;
     linksF.push(l);
   }
+
+  console.log('nodesF',nodesF);
+  console.log('linksF',linksF);
 
   Force.nodes(nodesF);
   Force.links(linksF);
@@ -87,12 +90,12 @@ function drawGraph (nodesS,linksS,fromTo,tickN,tickL)
       var src = nodesF[l.source.id];
       var dst = nodesF[l.target.id];
 
-      var e = links[l.id];
+      //var e = links[l.id];
       // links[l.id].attr({x1:src.x, y1:src.y,
       // 			x2:dst.x, y2:dst.y})
 
-      A(tickL, [[0,src.x], [0,src.y], [0,dst.x], [0,dst.y],
-		[0,l.id], [0,e], 0]);
+      A(tickL, [[0,l.id],
+		[0,src.x], [0,src.y], [0,dst.x], [0,dst.y], 0]);
 
     });
 
