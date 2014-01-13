@@ -6,7 +6,7 @@ import Data.List
 
 data HLink = Single Link
            | Self
-           | Multi [Link]
+           | Multi Link [Bool]
 
 
 norm (Link a b) = Link (min a b) (max a b)
@@ -21,5 +21,6 @@ linksGatherMulti links = map toHLink . groupBy f . sort $ links
       f (Link a b) (Link a' b') | (a,b)==(a',b') || (a,b)==(b',a') = True
                                 | otherwise                        = False
       toHLink [x]  = Single x
-      toHLink many = Multi many
+      toHLink many@(one:_) = Multi one $ map (==one) many
+
 

@@ -14,19 +14,12 @@ import Text.Printf
 
 import Vacuole.Snap
 import Vacuole.View.Types
-
+import Multi
 
 
 
 paper :: IO Paper
 paper = ffi "Paper"
-
-
--- parseNodes :: JSON -> [Node]
--- parseNodes (Arr ns) = map parseJSON ns
-
--- parseLinks :: JSON -> [Link]
--- parseLinks (Arr ls) = map parseJSON ls
 
 
 foreign import ccall canvasClear :: IO ()
@@ -72,8 +65,8 @@ genericNode size str = do
 
 
 
-mkLink :: Map.IntMap Node -> Element -> Link -> IO Element
-mkLink nodeMap arrow link@(Link from to)
+mkLink :: Map.IntMap Node -> Element -> HLink -> IO Element
+mkLink nodeMap arrow link
     | n == 1    = mkSimpleLink arrow link
 --    | otherwise = mkMultiLink arrow link
     where
@@ -143,7 +136,7 @@ mkVec (x,y) = Vec (fromIntegral x) (fromIntegral y)
 toInts :: Vec -> (Int,Int)
 toInts (Vec x y) = (round x, round y)
 
-tickL :: Map.IntMap Link -> Int -> Int -> Int -> Int
+tickL :: Map.IntMap HLink -> Int -> Int -> Int -> Int
       -> Int -> Element -> IO ()
 tickL links sx sy tx ty ix link = do
   setAttr (D,d) link
@@ -195,8 +188,13 @@ newInput v = do
 showError err = alert err
 
 
+linkEnds (Single link) = link
+linkEnds (Multi link _) = link
+
+
 showGraph g = do
-                let (nodes,links) = g :: GraphView
+                let (nodes,links0) = g :: GraphView
+                    links = linksGatherMulti links0
 
                 print g
 
@@ -204,7 +202,7 @@ showGraph g = do
                     linksMap = Map.fromList $ zip [1..] links
 
                 let fromTo = Arr $
-                     map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) links
+                     map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) $ map linkEnds $ links
 
                 arrow <- arrowDef
 
