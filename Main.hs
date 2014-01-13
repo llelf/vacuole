@@ -76,7 +76,7 @@ mkLink :: Link -> Element -> IO Element
 mkLink link arrow = do
   p <- paper
   l <- path "M0,0" p
-  setAttrs [(StrokeWidth,"3px"), (Stroke,"red")] l
+  setAttr (Class,"link") l
   setAttrPtr (MarkerMid,toPtr arrow) l
 
 
@@ -86,9 +86,8 @@ mkLink link arrow = do
 arrowDef = do
   p <- paper
   a <- path "M0,-5 L15,0 L0,5" p
-  setAttrs [(Stroke,"red"), (Fill,"green"),
-            (Transform, scale s)] a
-  marker (0,-5) (15,10) ((19+15)`div`3,0) a
+  setAttrs [(Class,"arrow"), (Transform, scale s)] a
+  marker (0,-5) (15,10) (0,0) a
       where
         alen = 15
         s = 1/3

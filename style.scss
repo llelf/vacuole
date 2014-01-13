@@ -10,6 +10,8 @@ $base3:   #fdf6e3;
 
 $bg: $base2;
 
+$link: $green;
+
 @import url(http://fonts.googleapis.com/css?family=Oxygen);
 
 .jquery-console-cursor {
@@ -37,11 +39,14 @@ circle.c {
     /* filter: url(#light); */
 }
 
+.arrow {
+    fill: transparent;
+    stroke: $link;
+    stroke-width: 3px;
+}
 
-
-
-line {
-    stroke: #586e75;
+.link {
+    stroke: $link;
     stroke-width: 3px;
 }
 
