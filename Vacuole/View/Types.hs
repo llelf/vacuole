@@ -27,4 +27,4 @@ data Node = Node Purpose String
 
 
 data Link = Link { from, to :: Int }
-            deriving (Read,Show)
+            deriving (Read,Ord,Eq,Show)
