@@ -18,7 +18,7 @@ instance Marshal Paper
 
 data Attr = AlignmentBaseline|Class|D|Fill
           |MarkerEnd|MarkerMid|MarkerSegment|MarkerStart
-          |Scale|Stroke|TextAnchor|Transform
+          |Scale|Stroke|StrokeWidth|TextAnchor|Transform
           |X1|X2|Y1|Y2
             deriving (Show,Read)
 
