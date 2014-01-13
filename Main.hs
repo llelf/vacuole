@@ -65,35 +65,46 @@ vanillaNode = genericNode 20
 
 genericNode size str = do
   p <- paper
-  c <- circle (0,0) 1 p >>= setAttrs [(Class,"c")]
+  c <- circle (0,0) 17 p >>= setAttrs [(Class,"c")]
   t <- text (0,0) str p >>= setAttrs [(TextAnchor,"middle"),
                                       (AlignmentBaseline,"middle")]
   g p >>= flip append c >>= flip append t
 
 
 
-mkLink :: Link -> Element -> IO Element
-mkLink link arrow = do
+mkLink :: Map.IntMap Node -> Element -> Link -> IO Element
+mkLink nodeMap arrow link@(Link from to)
+    | n == 1    = mkSimpleLink arrow link
+--    | otherwise = mkMultiLink arrow link
+    where
+      n = 1
+
+
+
+mkSimpleLink arrow link = do
   p <- paper
   l <- path "M0,0" p
   setAttr (Class,"link") l
   setAttrPtr (MarkerMid,toPtr arrow) l
 
-
+-- mkMultiLink arrow link = do
+--   p <- paper
+  
 
 
 
 arrowDef = do
   p <- paper
-  a <- path "M0,-5 L15,0 L0,5" p
+  a <- path "M0,-7 L15,0 L0,7" p
   setAttrs [(Class,"arrow"), (Transform, scale s)] a
-  marker (0,-5) (15,10) (0,0) a
+  marker (0,-7) (15,14) (round $ fromIntegral(alen)*s/2,0) a
       where
         alen = 15
         s = 1/3
 
 draw nodesE linksE = do
   p <- paper
+  outer <- g p
   linksG <- g p
   nodesG <- g p
   append outer linksG
@@ -113,14 +124,50 @@ tickN nodes param node = do
         Num y = param!"y"
 
 
+
+data Vec = Vec Double Double
+
+instance Num Vec where
+    Vec x y + Vec x' y' = Vec (x+x') (y+y')
+    negate (Vec x y) = Vec (-x) (-y)
+    (*) = undefined
+    signum = undefined
+    abs = undefined
+    fromInteger = undefined
+
+vecScale a (Vec x y) = Vec (a*x) (a*y)
+
+mkVec :: (Int,Int) -> Vec
+mkVec (x,y) = Vec (fromIntegral x) (fromIntegral y)
+
+toInts :: Vec -> (Int,Int)
+toInts (Vec x y) = (round x, round y)
+
 tickL :: Int -> Int -> Int -> Int -> Element -> IO ()
 tickL sx sy tx ty link = do
   setAttr (D,d) link
   return ()
     where
-      d = toJSStr $ printf "M%d,%d L%d,%d L%d,%d" sx sy mx my tx ty
-      [mx,my] = (`div` 2) <$> [sx+tx, sy+ty]
+--      d0 = toJSStr $ printf "M%d,%d L%d,%d L%d,%d" sx sy mx my tx ty
+      d = toJSStr $ printf "M%d,%d Q%d,%d,%d,%d Q%d,%d,%d,%d"
+                         sx sy cx cy lmx lmy c1x c1y tx ty
+      src = mkVec (sx,sy)
+      dst = mkVec (tx,ty)
+      mid = vecScale 0.5 (src+dst)
+      dir = mid - src
+      dirN = vecScale 0.77 $ norm dir
+      (lmx,lmy) = toInts $ mid + dirN
+      out = -dir + dirN
 
+      out1 =  out
+      ctl = src + dirN
+      (cx,cy) = toInts ctl
+
+      ctl1 = dst + dirN
+      (c1x,c1y) = toInts ctl1
+
+      norm (Vec x y) = Vec (-y) x
+      norm1 (Vec x y) = Vec y (-x)
 
 
 defaultInput = "[1..3]"
@@ -163,7 +210,7 @@ showGraph g = do
                 arrow <- arrowDef
 
                 nodesE <- mapM mkNode nodes
-                linksE <- mapM (flip mkLink arrow) links'
+                linksE <- mapM (mkLink nodesMap arrow) links'
                 draw nodesE linksE
                 drawGraph (toPtr nodesE) (toPtr linksE)
                           (jsonToJS fromTo)
