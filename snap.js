@@ -92,7 +92,7 @@ function drawGraph (nodesS,linksS,fromTo,tickN,tickL)
       // 			x2:dst.x, y2:dst.y})
 
       A(tickL, [[0,src.x], [0,src.y], [0,dst.x], [0,dst.y],
-		[0,e], 0]);
+		[0,l.id], [0,e], 0]);
 
     });
 

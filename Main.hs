@@ -34,7 +34,7 @@ foreign import ccall canvasClear :: IO ()
 foreign import ccall drawGraph
     :: Ptr [Element] -> Ptr [Element] -> JSAny
     -> Ptr (JSON -> Element -> IO ())
-    -> Ptr (Int->Int->Int->Int->Element->IO ())
+    -> Ptr (Int->Int->Int->Int->Int->Element->IO ())
     -> IO ()
 
 foreign import ccall initTerm :: Ptr (JSString -> IO Bool) -> IO ()
@@ -143,8 +143,9 @@ mkVec (x,y) = Vec (fromIntegral x) (fromIntegral y)
 toInts :: Vec -> (Int,Int)
 toInts (Vec x y) = (round x, round y)
 
-tickL :: Int -> Int -> Int -> Int -> Element -> IO ()
-tickL sx sy tx ty link = do
+tickL :: Map.IntMap Link -> Int -> Int -> Int -> Int
+      -> Int -> Element -> IO ()
+tickL links sx sy tx ty ix link = do
   setAttr (D,d) link
   return ()
     where
@@ -203,6 +204,7 @@ showGraph g = do
                     nNodes = length nodes
                     links' = filter sane links
                     sane (Link x y) = x < nNodes && y < nNodes
+                    linksMap = Map.fromList $ zip [1..] links
 
                 let fromTo = Arr $
                      map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) links'
@@ -215,7 +217,7 @@ showGraph g = do
                 drawGraph (toPtr nodesE) (toPtr linksE)
                           (jsonToJS fromTo)
                           (toPtr $ tickN nodesMap)
-                          (toPtr tickL)
+                          (toPtr $ tickL linksMap)
 
 
 main = initTerm (toPtr newInput)
