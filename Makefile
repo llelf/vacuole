@@ -9,7 +9,8 @@ Vacuole/Snap.hs Vacuole/Snap.ffi.js: Vacuole/Snap.ffi.hs
 
 
 
-static.js: jquery.js jquery.console.uno.js d3.js snap.svg.js
+uibits/static.js: uibits/jquery.js uibits/jquery.console.uno.js \
+		uibits/d3.js uibits/snap.svg.js
 	cat $^ > $@
 
 static.min.js: static.js
