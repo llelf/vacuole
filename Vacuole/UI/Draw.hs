@@ -43,7 +43,7 @@ foreign import ccall drawGraph
 linkStrength _ = 0.5
 
 
-mkNode :: Node -> IO Element
+mkNode :: Node -> Paper -> IO Element
 mkNode (Node (Vanilla s) _) = vanillaNode s
 mkNode (Node EmptyList _)  = vanillaNode "[]"
 mkNode (Node ArrWords _) = memNode
@@ -57,8 +57,7 @@ nowhereNode = genericNode 3 "xx"
 consNode = genericNode 15 "(:)"
 
 
-memNode = do
-  p <- paper
+memNode p = do
   cs <- forM [3,2..0] $ \x ->
           circle (x*3,x*3) 20 p >>= setAttrs [(Class,"c")]
   g <- g p
@@ -66,8 +65,7 @@ memNode = do
 
 vanillaNode = genericNode 20
 
-genericNode size str = do
-  p <- paper
+genericNode size str p = do
   c <- circle (0,0) 17 p >>= setAttrs [(Class,"c")]
   t <- text (0,0) str p >>= setAttrs [(TextAnchor,"middle"),
                                       (AlignmentBaseline,"middle")]
