@@ -9,10 +9,10 @@ import Haste.JSON
 import Control.Applicative
 import qualified Data.IntMap as Map
 
-import Vacuole.Snap
 import Vacuole.View.Types
-import Multi
-import Draw
+import Vacuole.Snap
+import Vacuole.UI.Multi
+import Vacuole.UI.Draw
 
 
 

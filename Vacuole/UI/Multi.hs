@@ -1,4 +1,4 @@
-module Multi where
+module Vacuole.UI.Multi where
 
 import Vacuole.View.Types
 import qualified Data.Map as M

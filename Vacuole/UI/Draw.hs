@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ParallelListComp #-}
-module Draw where
+module Vacuole.UI.Draw where
 
 import Vacuole.Snap
 import Haste
@@ -12,7 +12,7 @@ import Data.List ((\\))
 import qualified Data.IntMap as Map
 
 import Vacuole.View.Types
-import Multi
+import Vacuole.UI.Multi
 
 data LinkElem = SingleElem Element
               | MultiElem [Element] Element
