@@ -1,7 +1,7 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
 module Vacuole.Snap where
-import Haste
+import Haste (toJSString)
 import Haste.Prim
 import Haste.JSON
 import Data.Char

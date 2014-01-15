@@ -3,7 +3,7 @@
 module Vacuole.UI.Draw where
 
 import Vacuole.Snap
-import Haste
+import Haste (ffi)
 import Haste.Prim
 import Haste.JSON
 import Control.Monad
