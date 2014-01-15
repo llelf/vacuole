@@ -12,7 +12,7 @@ import Data.List ((\\))
 import qualified Data.IntMap as Map
 
 import Vacuole.View.Types
-import Vacuole.UI.Vec
+import qualified Vacuole.UI.Vec as Vec
 import Vacuole.UI.Multi
 
 data LinkElem = SingleElem Element
@@ -145,9 +145,9 @@ tickLink _ (SingleElem link) sx sy tx ty = do
   return ()
     where
       d = toJSStr $ printf "M%d,%d L%d,%d L%d,%d" sx sy mx my tx ty
-      src = mkVec (sx,sy)
-      dst = mkVec (tx,ty)
-      (mx,my) = toInts $ vecScale 0.5 (src+dst)
+      src = Vec.mkVec (sx,sy)
+      dst = Vec.mkVec (tx,ty)
+      (mx,my) = Vec.coords $ Vec.scale 0.5 (src+dst)
 
 
 tickLink (Multi _ dirs) (MultiElem links _) sx sy tx ty
@@ -167,21 +167,18 @@ pathSpec f (sx,sy) (tx,ty)
     = printf "M%d,%d Q%d,%d,%d,%d Q%d,%d,%d,%d"
       sx sy cx cy lmx lmy c1x c1y tx ty
     where
-      src = mkVec (sx,sy)
-      dst = mkVec (tx,ty)
-      mid = vecScale 0.5 (src+dst)
+      src = Vec.mkVec (sx,sy)
+      dst = Vec.mkVec (tx,ty)
+      mid = Vec.scale 0.5 (src+dst)
       dir = mid - src
-      dirN = vecScale (0.77 * fromIntegral f) $ norm dir
-      (lmx,lmy) = toInts $ mid + dirN
+      dirN = Vec.scale (0.77 * fromIntegral f) $ Vec.rotL dir
+      (lmx,lmy) = Vec.coords $ mid + dirN
       out = -dir + dirN
 
       out1 =  out
       ctl = src + dirN
-      (cx,cy) = toInts ctl
+      (cx,cy) = Vec.coords ctl
 
       ctl1 = dst + dirN
-      (c1x,c1y) = toInts ctl1
-
-      norm (Vec x y) = Vec (-y) x
-      norm1 (Vec x y) = Vec y (-x)
+      (c1x,c1y) = Vec.coords ctl1
 
