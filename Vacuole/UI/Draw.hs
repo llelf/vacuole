@@ -37,7 +37,7 @@ foreign import ccall drawGraph
     -> Ptr (Int->Int->Int->Int->Int->IO ())
     -> IO ()
 
-foreign import ccall initTerm :: Ptr (JSString -> IO Bool) -> IO ()
+
 
 
 mkNode :: Node -> IO Element

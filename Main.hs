@@ -15,6 +15,8 @@ import Vacuole.UI.Draw
 
 
 
+foreign import ccall initTerm :: Ptr (JSString -> IO Bool) -> IO ()
+
 
 defaultInput = "[1..3]"
 
