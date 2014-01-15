@@ -24,7 +24,7 @@ defaultInput = "[1..3]"
 newInput :: JSString -> IO Bool
 newInput v = do
   print v
-  textRequest_ POST "/vac" [("expr",v)] $ \res ->
+  textRequestWithData_ POST "/vac" [] v $ \res ->
       do
         print res
         canvasClear
