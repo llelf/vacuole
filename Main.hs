@@ -42,37 +42,6 @@ newInput v = do
 showError err = alert err
 
 
-linkEnds (Single link) = link
-linkEnds (Multi link _) = link
-
-
-showGraph g = do
-  let (nodes,links0) = g :: GraphView
-      links = linksGatherMulti links0
-
-  print links
-
-  let nodesMap = Map.fromList $ zip [0..] nodes
-      linksMap = Map.fromList $ zip [0..] links
-                 
-  let fromTo = Arr $
-               map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) $ map linkEnds $ links
-
-  arrow <- arrowDef
-
-  nodesE <- mapM mkNode nodes
-  zoo <- mapM (mkLink nodesMap arrow) links
-  let linkElems = Map.fromList $ zip [0..] zoo
-
-  print linkElems
-
-  draw nodesE linkElems
-  drawGraph (toPtr nodesE) (jsonToJS fromTo)
-            (toPtr $ tickN nodesMap)
-            (toPtr $ tickL linksMap linkElems)
-
-
-
 
 main = do initD3 (toPtr linkStrength)
           initTerm (toPtr newInput)

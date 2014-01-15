@@ -182,3 +182,40 @@ pathSpec f (sx,sy) (tx,ty)
       ctl1 = dst + dirN
       (c1x,c1y) = Vec.coords ctl1
 
+
+
+
+linkEnds (Single link) = link
+linkEnds (Multi link _) = link
+
+
+
+
+showGraph g = do
+  let (nodes,links0) = g :: GraphView
+      links = linksGatherMulti links0
+
+  print links
+
+  let nodesMap = Map.fromList $ zip [0..] nodes
+      linksMap = Map.fromList $ zip [0..] links
+
+  let fromTo = Arr $
+               map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) $ map linkEnds $ links
+
+  arrow <- arrowDef
+
+  pap <- paper
+
+  nodesE <- mapM (flip mkNode pap) nodes
+  zoo <- mapM (mkLink nodesMap arrow) links
+  let linkElems = Map.fromList $ zip [0..] zoo
+
+  print linkElems
+
+  draw nodesE linkElems
+  drawGraph (toPtr nodesE) (jsonToJS fromTo)
+            (toPtr $ tickN nodesMap)
+            (toPtr $ tickL linksMap linkElems)
+
+
