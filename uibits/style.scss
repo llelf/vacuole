@@ -24,8 +24,9 @@ body {
 }
 
 svg {
-    width: 700px;
-    height: 700px;
+    /* width: 700px; */
+    /* height: 700px; */
+    border: solid green 2px;
 }
 
 circle {
@@ -48,6 +49,7 @@ circle.c {
 .link {
     stroke: $link;
     stroke-width: 3px;
+    fill: transparent;
 }
 
 
@@ -58,8 +60,6 @@ circle.c {
         overflow:auto;
     }
 
-
-    border: 1px solid green;
     height: 2cm;
 }
 
