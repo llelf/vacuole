@@ -39,6 +39,8 @@ foreign import ccall drawGraph
 
 
 
+linkStrength _ = 0.5
+
 
 mkNode :: Node -> IO Element
 mkNode (Node (Vanilla s) _) = vanillaNode s

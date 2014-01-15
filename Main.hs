@@ -16,7 +16,7 @@ import Vacuole.UI.Draw
 
 
 foreign import ccall initTerm :: Ptr (JSString -> IO Bool) -> IO ()
-
+foreign import ccall initD3 :: Ptr (Int -> Double) -> IO ()
 
 defaultInput = "[1..3]"
 
@@ -72,5 +72,10 @@ showGraph g = do
             (toPtr $ tickL linksMap linkElems)
 
 
-main = initTerm (toPtr newInput)
+
+
+main = do initD3 (toPtr linkStrength)
+          initTerm (toPtr newInput)
+
+
 

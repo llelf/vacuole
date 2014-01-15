@@ -24,12 +24,19 @@ function initTerm (handle)
 
 
 
+var Force;
 
-var width=800;
-var height=500;
-var Force = d3.layout.force().size([width,height]);
-Force.linkStrength(function(l) {return l.strength || 0.5});
-Force.charge(-1000);
+function initD3 (linkStr)
+{
+  var w = $(window).width() - 100;
+  var h = 500;
+  Force = d3.layout.force().size([w,h]);
+  Force.linkStrength(function(l) {
+    var r = A(linkStr, [[0,l.id], 0]);
+    return E(r[1]);
+  });
+  Force.charge(-900);
+}
 
 
 function hslistToJS (list)
