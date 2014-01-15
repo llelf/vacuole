@@ -7,7 +7,7 @@ import Data.List
 data HLink = Single Link
            | Self
            | Multi Link [Bool]
-
+             deriving Show
 
 norm (Link a b) = Link (min a b) (max a b)
 
