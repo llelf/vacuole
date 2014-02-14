@@ -7,7 +7,8 @@ import Data.IntMap.Strict (elems,mapWithKey,notMember)
 import qualified Data.ByteString.Lazy.Char8 as BS
 import Vacuole.Interp
 import Vacuole.View.Types
-import qualified GHC.Vacuum.ClosureType as Closure
+import qualified GHC.Vacuum.ClosureType as Closure (isFun)
+import GHC.Vacuum.ClosureType
 
 
 boo :: String -> IO (Either String GraphView)
@@ -19,7 +20,7 @@ boo s = do vvv <- vacuumise s
 
 
 
-isFun = Closure.isFun . itabType
+isFunc = Closure.isFun . itabType
 
 showChr c | isPrint c = ['\'',c,'\'']
           | otherwise = show c
@@ -31,9 +32,9 @@ toJS node@HNode{nodeLits=lits, nodeInfo=info}
     | n=="C#" = Node (Vanilla . showChr . chr . fromIntegral . head $ lits) "char"
     | n==":"  = Node Cons "(:)"
     | n=="[]"  = Node EmptyList "[]"
-    | isFun info = Node Fun "λ"
-    | itabType info == Closure.ARR_WORDS = Node ArrWords "arrwords"
-    | otherwise = Node (Vanilla n) "?"
+    | isFunc info = Node Fun "λ"
+    | itabType info == ARR_WORDS = Node ArrWords "arrwords"
+    | otherwise = Node (Vanilla n) . show $ itabType info
     where n = nodeName node
 
 
