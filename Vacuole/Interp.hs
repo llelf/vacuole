@@ -23,11 +23,14 @@ deriving instance Typeable HNode
 
 
 imports = [
- "GHC.Vacuum",
- "Data.IntMap.Strict",
- "Vacuole.Prelude",
- "Prelude",
- "Data.List"
+-- ("GHC.Vacuum", Just "Vacuum"),
+-- ("Data.IntMap.Strict", Just "IntMap"),
+ ("Vacuole.Prelude", Nothing),
+ ("Prelude", Nothing),
+ ("Data.List", Just "L"),
+ ("Data.Map", Just "Map"),
+ ("Data.Vector", Just "Vector"),
+ ("Data.Text", Just "Text")
  ]
 
 
@@ -40,7 +43,7 @@ vacuumise s = do res <- H.runInterpreter interp
       interp :: H.Interpreter Vacuum
       interp = do
         H.loadModules ["Vacuole.Prelude"]
-        H.setImports imports
+        H.setImportsQ imports
         H.interpret ("vacuumTo 10 (" ++ s ++ ")") (H.as :: Vacuum)
 
 
