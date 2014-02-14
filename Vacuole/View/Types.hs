@@ -13,6 +13,7 @@ data Purpose
     | EmptyList
     | Cons
     | ArrWords
+    | ArrPtrs
     | Fun
     | Nowhere
       deriving (Read,Show,Eq)

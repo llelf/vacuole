@@ -26,6 +26,12 @@ showChr c | isPrint c = ['\'',c,'\'']
           | otherwise = show c
 
 
+isArrPtrs c = itabType c `elem`
+          [MUT_ARR_PTRS_CLEAN,MUT_ARR_PTRS_DIRTY,
+           MUT_ARR_PTRS_FROZEN0,MUT_ARR_PTRS_FROZEN,
+           MUT_ARR_PTRS_FROZEN]
+
+
 toJS :: HNode -> Node
 toJS node@HNode{nodeLits=lits, nodeInfo=info}
     | n=="S#" || n=="I#" = Node (Vanilla . show . head $ lits) "int"
@@ -34,6 +40,7 @@ toJS node@HNode{nodeLits=lits, nodeInfo=info}
     | n=="[]"  = Node EmptyList "[]"
     | isFunc info = Node Fun "λ"
     | itabType info == ARR_WORDS = Node ArrWords "arrwords"
+    | isArrPtrs info = Node ArrPtrs "arrpt"
     | otherwise = Node (Vanilla n) . show $ itabType info
     where n = nodeName node
 
