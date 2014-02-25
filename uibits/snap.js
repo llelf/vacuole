@@ -35,7 +35,8 @@ function initD3 (linkStr)
     var r = A(linkStr, [[0,l.id], 0]);
     return E(r[1]);
   });
-  Force.charge(-900);
+
+  Force.charge(-1000);
 }
 
 

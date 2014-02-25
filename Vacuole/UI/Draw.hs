@@ -40,7 +40,7 @@ foreign import ccall drawGraph
 
 
 
-linkStrength _ = 0.5
+linkStrength _ = 0.6
 
 
 mkNode :: Node -> Paper -> IO Element
