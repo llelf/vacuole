@@ -32,13 +32,13 @@ newInput v = do
           Nothing -> showError "Ajax error"
           Just dat ->
                  case read (fromJSStr dat::String) :: Either String GraphView of
-                   Left err -> showError err
+                   Left err     -> showError err
                    Right graph  -> showGraph graph
 
   return True
 
 
-
+showError :: String -> IO ()
 showError err = alert err
 
 

@@ -25,13 +25,14 @@ data LinkElem = SingleElem Element          -- ^ single link
                 deriving Show
 
 
+linkOuterElem :: LinkElem -> Element
 linkOuterElem (SingleElem e) = e
 linkOuterElem (MultiElem _ e) = e
 
 
 
 mkLink :: Map.IntMap Node -> Element -> HLink -> IO LinkElem
-mkLink nodeMap arrow (Single link) = mkSimpleLink arrow link
+mkLink nodeMap arrow (Single link)  = mkSimpleLink arrow link
 mkLink nodeMap arrow hlink@Multi{}  = mkMultiLink arrow hlink
 
 
@@ -54,7 +55,7 @@ mkMultiLink arrow (Multi link dirs) = do
 
 
 
-
+arrowDef :: IO Element
 arrowDef = do
   p <- paper
   a <- path (printf "M0,%d L%d,0 L0,%d" (negate asize) alen asize) p
@@ -66,7 +67,7 @@ arrowDef = do
         s = 1/3
 
 
-
+linkEnds :: HLink -> Link
 linkEnds (Single link) = link
 linkEnds (Multi link _) = link
 
@@ -77,6 +78,7 @@ tickL :: Map.IntMap HLink -> Map.IntMap LinkElem
       -> Int
       -> Int -> Int -> Int -> Int -> IO ()
 tickL links linkEls ix = tickLink (links Map.! ix) (linkEls Map.! ix)
+
 
 tickLink :: HLink -> LinkElem -> Int -> Int -> Int -> Int -> IO ()
 
@@ -93,7 +95,7 @@ tickLink _ (SingleElem link) sx sy tx ty = do
 
 tickLink (Multi _ dirs) (MultiElem links _) sx sy tx ty
     = sequence_ [ setAttr (D, toJSStr $ pathSpec' f dir) link
-                  | link <- links | dir <- dirs | f <- fs (length dirs) ]
+                  | link <- links | dir <- dirs | f <- jumps (length dirs) ]
     where
       pathSpec' f True  = multiLinkPathSpec f src dst
       pathSpec' f False = multiLinkPathSpec (-f) src dst
@@ -103,15 +105,15 @@ tickLink (Multi _ dirs) (MultiElem links _) sx sy tx ty
 
 
 -- | n of links in multilink -> list of max deviations from base line
-fs :: Int -> [Int]
-fs n | odd n     = [-n2..n2]
-     | otherwise = fs (n+1) \\ [0]
+jumps :: Int -> [Int]
+jumps n | odd n     = [-n2..n2]
+        | otherwise = jumps (n+1) \\ [0]
     where n2 = n `div` 2
 
 
--- | pathSpec = bezier curve going max to f from base line
+-- | pathSpec = bezier curve going max to "jump" from base line
 multiLinkPathSpec :: Int -> (Int,Int) -> (Int,Int) -> String
-multiLinkPathSpec f (sx,sy) (tx,ty)
+multiLinkPathSpec jump (sx,sy) (tx,ty)
     = printf "M%d,%d Q%d,%d,%d,%d Q%d,%d,%d,%d"
       sx sy cx cy lmx lmy c1x c1y tx ty
     where
@@ -119,15 +121,13 @@ multiLinkPathSpec f (sx,sy) (tx,ty)
       dst = Vec.mkVec (tx,ty)
       mid = Vec.scale 0.5 (src+dst)
       dir = mid - src
-      dirN = Vec.scale (0.77 * fromIntegral f) $ Vec.rotL dir
-      (lmx,lmy) = Vec.coords $ mid + dirN
-      out = -dir + dirN
+      dirN = Vec.scale (0.77 * fromIntegral jump) $ Vec.rotL dir -- jump from middle point
+      (lmx,lmy) = Vec.coords $ mid + dirN                        -- jump from start
 
-      out1 =  out
-      ctl = src + dirN
+      ctl = src + dirN          -- 1st control point
       (cx,cy) = Vec.coords ctl
 
-      ctl1 = dst + dirN
+      ctl1 = dst + dirN         -- 2nd control point
       (c1x,c1y) = Vec.coords ctl1
 
 

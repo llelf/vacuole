@@ -1,5 +1,4 @@
 {-# LANGUAGE TupleSections, OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Vacuole.View (boo) where
 
 import Data.Char
@@ -14,7 +13,7 @@ import GHC.Vacuum.ClosureType
 boo :: String -> IO (Either String GraphView)
 boo s = do vvv <- vacuumise s
            return $ case vvv of
-                      Left e -> Left $ show e
+                      Left e  -> Left $ show e
                       Right v -> Right $ nodesLinks v
 
 

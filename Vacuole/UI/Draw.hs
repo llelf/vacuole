@@ -45,10 +45,9 @@ draw nodesE linkElems = do
   forM_ linksE (append linksG . linkOuterElem)
 
 
-
-
-showGraph g = do
-  let (nodes,links0) = g :: GraphView
+showGraph :: GraphView -> IO ()
+showGraph gview = do
+  let (nodes,links0) = gview :: GraphView
       links = linksGatherMulti links0
 
   print links
@@ -56,8 +55,10 @@ showGraph g = do
   let nodesMap = Map.fromList $ zip [0..] nodes
       linksMap = Map.fromList $ zip [0..] links
 
-  let fromTo = Arr $
-               map (\(Link s t) -> Arr $ map (Num . fromIntegral) [s,t]) $ map linkEnds $ links
+  let ends = map linkEnds links
+
+  let fromTo = Arr $ [Arr $ map (Num . fromIntegral) [s,t]
+                      | Link s t <- ends]
 
   arrow <- arrowDef
 
