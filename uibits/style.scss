@@ -7,6 +7,7 @@ $base0:   #839496;
 $base1:   #93a1a1;
 $base2:   #eee8d5;
 $base3:   #fdf6e3;
+$orange:  #cb4b16;
 
 $bg: $base2;
 
@@ -38,13 +39,14 @@ svg {
 
 circle {
    fill: $bg;
+   stroke-width: 3px;
+   stroke: $blue;
 }
 
-circle.c {
-    /* fill: url(#pat); */
-    stroke: $blue;
-    stroke-width: 3px;
-    /* filter: url(#light); */
+circle.vanilla {
+}
+
+circle.cons {
 }
 
 .arrow {
