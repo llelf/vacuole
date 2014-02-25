@@ -10,19 +10,6 @@ function canvasClear()
 
 
 
-function initTerm (handle)
-{
-  $('.console').console({
-    promptLabel: '> ',
-    commandValudate: function (x) { return x!='' },
-    commandHandle: function (x) { console.log('js',x); return A(handle, [[0,x], 0]) },
-    autofocus:true,
-    promptHistory:true
-  });
-}
-
-
-
 
 var Force;
 
