@@ -15,8 +15,9 @@ import Vacuole.View.Types
 import qualified Vacuole.UI.Vec as Vec
 import Vacuole.UI.Multi
 
-data LinkElem = SingleElem Element
-              | MultiElem [Element] Element
+data LinkElem = SingleElem Element          -- ^ single link
+              | MultiElem [Element] Element -- ^ multi-link
+              | SelfElem                    -- ^ self-link
                 deriving Show
 
 
@@ -25,7 +26,7 @@ linkOuterElem (MultiElem _ e) = e
 
 
 
-
+-- XXX global. Kill
 paper :: IO Paper
 paper = ffi "Paper"
 
@@ -33,9 +34,10 @@ paper = ffi "Paper"
 foreign import ccall canvasClear :: IO ()
 
 foreign import ccall drawGraph
-    :: Ptr [Element] -> JSAny
-    -> Ptr (JSON -> Element -> IO ())
-    -> Ptr (Int->Int->Int->Int->Int->IO ())
+    :: Ptr [Element]                        -- ^ nodesS
+    -> JSAny                                -- ^ fromTo
+    -> Ptr (JSON -> Element -> IO ())       -- ^ tickN
+    -> Ptr (Int->Int->Int->Int->Int->IO ()) -- ^ tickL
     -> IO ()
 
 
@@ -122,8 +124,9 @@ draw nodesE linkElems = do
 
 
 
+-- | Each tick for every node
 tickN :: Map.IntMap Node -> JSON -> Element -> IO ()
-tickN nodes param node = do
+tickN _ param node = do
   setAttr (Transform, translate (round x) (round y)) node
   return ()
       where
@@ -131,7 +134,7 @@ tickN nodes param node = do
         Num y = param!"y"
 
 
-
+-- | Each tick for every link
 tickL :: Map.IntMap HLink -> Map.IntMap LinkElem
       -> Int
       -> Int -> Int -> Int -> Int -> IO ()
@@ -143,6 +146,7 @@ tickLink _ (SingleElem link) sx sy tx ty = do
   setAttr (D,d) link
   return ()
     where
+      -- Actually this is not needed now. tickLink (Multi …) is general enough
       d = toJSStr $ printf "M%d,%d L%d,%d L%d,%d" sx sy mx my tx ty
       src = Vec.mkVec (sx,sy)
       dst = Vec.mkVec (tx,ty)
@@ -153,16 +157,23 @@ tickLink (Multi _ dirs) (MultiElem links _) sx sy tx ty
     = sequence_ [ setAttr (D, toJSStr $ pathSpec' f dir) link
                   | link <- links | dir <- dirs | f <- fs (length dirs) ]
     where
-      pathSpec' f True  = pathSpec f src dst
-      pathSpec' f False = pathSpec (-f) src dst
+      pathSpec' f True  = multiLinkPathSpec f src dst
+      pathSpec' f False = multiLinkPathSpec (-f) src dst
       src = (sx,sy)
       dst = (tx,ty)
 
+
+
+-- | n of links in multilink -> list of max deviations from base line
+fs :: Int -> [Int]
 fs n | odd n     = [-n2..n2]
      | otherwise = fs (n+1) \\ [0]
     where n2 = n `div` 2
 
-pathSpec f (sx,sy) (tx,ty)
+
+-- | pathSpec = bezier curve going max to f from base line
+multiLinkPathSpec :: Int -> (Int,Int) -> (Int,Int) -> String
+multiLinkPathSpec f (sx,sy) (tx,ty)
     = printf "M%d,%d Q%d,%d,%d,%d Q%d,%d,%d,%d"
       sx sy cx cy lmx lmy c1x c1y tx ty
     where
