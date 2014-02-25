@@ -1,5 +1,10 @@
 
-$('.wut .show').click (function () { $('.wut .desc').toggle() });
+(function ()
+{
+
+var desc = $('.wut .desc');
+
+$('.wut .toggle').click (function () { desc.toggle() });
 
 $('.wut .examples').each (function (i,e)
 			  {
@@ -9,3 +14,4 @@ $('.wut .examples').each (function (i,e)
   
 
 
+})();

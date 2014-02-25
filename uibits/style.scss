@@ -65,10 +65,6 @@ circle.cons {
 
 .wut {
     width: 400px;
-    border: solid black 1px;
-    background: $base2;
-    box-shadow: 5px 5px 13px black;
-
     right: 1em;
     position: absolute;
 
@@ -83,9 +79,23 @@ circle.cons {
     }
 
 
+    .desc {
+	border: solid black 1px;
+	background: $base2;
+	box-shadow: 5px 5px 13px black;
+	padding: 1ex;
+    }
+
+    .close {
+	font-size: 0.7cm;
+	position: absolute;
+	top: 1ex;
+	right: 1ex;
+    }
+
     .show {
 	text-align: right;
-	text-decoration: underline;
+	/* text-decoration: underline; */
     }
 
     h2 {
