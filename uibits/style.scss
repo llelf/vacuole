@@ -33,7 +33,7 @@ body {
 svg {
     /* width: 700px; */
     /* height: 700px; */
-    border: solid green 2px;
+    /* border: solid green 2px; */
 }
 
 circle {
@@ -58,6 +58,40 @@ circle.c {
     stroke-width: 3px;
     fill: transparent;
 }
+
+
+
+.wut {
+    width: 400px;
+    border: solid black 1px;
+    background: $base2;
+    box-shadow: 5px 5px 13px black;
+
+    right: 1em;
+    position: absolute;
+
+    i {
+	font-style: normal;
+	border: solid black 1px;
+	border-radius: 0px;
+	padding: .3ex;
+	padding-left: .5ex;
+	padding-right: .5ex;
+	background: $base3;
+    }
+
+
+    .show {
+	text-align: right;
+    }
+
+    h2 {
+	font-size: medium;
+	font-weigth: bold;
+    }
+
+}
+
 
 
 .console {
