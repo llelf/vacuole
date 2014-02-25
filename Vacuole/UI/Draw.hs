@@ -47,6 +47,7 @@ mkNode :: Node -> Paper -> IO Element
 mkNode (Node (Vanilla s) _) = vanillaNode s
 mkNode (Node EmptyList _)  = vanillaNode "[]"
 mkNode (Node ArrWords _) = memNode
+mkNode (Node ArrPtrs _) = memNode
 mkNode (Node Cons _) = consNode
 mkNode (Node Fun _)  = vanillaNode "λ"
 mkNode (Node Nowhere _) = nowhereNode
