@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ParallelListComp #-}
-module Vacuole.UI.Draw where
+module Vacuole.UI.Draw (showGraph, canvasClear,
+                        linkStrength) where
 
 import Haste (ffi)
 import Haste.Prim
