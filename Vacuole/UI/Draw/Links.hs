@@ -1,6 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ParallelListComp #-}
-module Vacuole.UI.Draw.Links where
+module Vacuole.UI.Draw.Links (mkLink, LinkElem,
+                             linkEnds, linkOuterElem,
+                             tickL,
+                             arrowDef)
+    where
 
 import Vacuole.View.Types
 import Vacuole.UI.Multi

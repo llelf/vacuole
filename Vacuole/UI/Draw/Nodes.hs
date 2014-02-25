@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Vacuole.UI.Draw.Nodes where
+module Vacuole.UI.Draw.Nodes (mkNode,
+                              tickN)
+    where
 
 import Haste.JSON
 import Vacuole.Snap
