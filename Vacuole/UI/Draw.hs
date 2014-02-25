@@ -67,7 +67,7 @@ memNode p = do
 vanillaNode = genericNode 20
 
 genericNode size str p = do
-  c <- circle (0,0) 17 p >>= setAttrs [(Class,"c")]
+  c <- circle (0,0) size p >>= setAttrs [(Class,"c")]
   t <- text (0,0) str p >>= setAttrs [(TextAnchor,"middle"),
                                       (AlignmentBaseline,"middle")]
   g p >>= flip append c >>= flip append t
