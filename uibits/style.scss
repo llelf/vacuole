@@ -76,7 +76,7 @@ circle.cons {
 	font-style: normal;
 	border: solid black 1px;
 	border-radius: 0px;
-	padding: .3ex;
+	padding: .1ex;
 	padding-left: .5ex;
 	padding-right: .5ex;
 	background: $base3;
@@ -85,6 +85,7 @@ circle.cons {
 
     .show {
 	text-align: right;
+	text-decoration: underline;
     }
 
     h2 {
