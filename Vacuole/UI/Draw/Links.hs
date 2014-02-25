@@ -57,11 +57,12 @@ mkMultiLink arrow (Multi link dirs) = do
 
 arrowDef = do
   p <- paper
-  a <- path "M0,-7 L15,0 L0,7" p
+  a <- path (printf "M0,%d L%d,0 L0,%d" (negate asize) alen asize) p
   setAttrs [(Class,"arrow"), (Transform, scale s)] a
-  marker (0,-7) (15,14) (round $ fromIntegral alen * s / 2, 0) a
+  marker (0,-asize) (alen, asize*2) (round $ fromIntegral alen * s / 2, 0) a
       where
-        alen = 15
+        alen = 15 :: Int
+        asize = 5 :: Int
         s = 1/3
 
 
