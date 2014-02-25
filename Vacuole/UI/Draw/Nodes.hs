@@ -1,9 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Vacuole.UI.Draw.Nodes where
 
+import Haste.JSON
 import Vacuole.Snap
 import Vacuole.View.Types
 import Control.Monad
+import qualified Data.IntMap as Map
 
 
 mkNode :: Node -> Paper -> IO Element
@@ -34,4 +36,19 @@ genericNode size svgcls str p = do
   t <- text (0,0) str p >>= setAttrs [(TextAnchor,"middle"),
                                       (AlignmentBaseline,"middle")]
   g p >>= flip append c >>= flip append t
+
+
+
+
+
+
+-- | Each tick for every node
+tickN :: Map.IntMap Node -> JSON -> Element -> IO ()
+tickN _ param node = do
+  setAttr (Transform, translate (round x) (round y)) node
+  return ()
+      where
+        Num x = param!"x"
+        Num y = param!"y"
+
 
