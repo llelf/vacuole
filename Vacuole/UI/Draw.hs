@@ -2,11 +2,10 @@
 module Vacuole.UI.Draw (showGraph, canvasClear,
                         linkStrength) where
 
-import Haste (ffi)
+
 import Haste.Prim
 import Haste.JSON
 import Control.Monad
-import Text.Printf
 import qualified Data.IntMap as Map
 
 import Vacuole.View.Types
