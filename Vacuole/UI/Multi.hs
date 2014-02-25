@@ -9,8 +9,6 @@ data HLink = Single Link
            | Multi Link [Bool]
              deriving Show
 
-norm (Link a b) = Link (min a b) (max a b)
-
 
 
 linksGatherMulti :: [Link] -> [HLink]

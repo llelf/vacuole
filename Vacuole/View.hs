@@ -34,14 +34,14 @@ isArrPtrs c = itabType c `elem`
 
 toJS :: HNode -> Node
 toJS node@HNode{nodeLits=lits, nodeInfo=info}
-    | n=="S#" || n=="I#" = Node (Vanilla . show . head $ lits) "int"
-    | n=="C#" = Node (Vanilla . showChr . chr . fromIntegral . head $ lits) "char"
-    | n==":"  = Node Cons "(:)"
-    | n=="[]"  = Node EmptyList "[]"
-    | isFunc info = Node Fun "λ"
+    | n=="S#" || n=="I#"         = Node (Vanilla . show . head $ lits) "int"
+    | n=="C#"                    = Node (Vanilla . showChr . chr . fromIntegral . head $ lits) "char"
+    | n==":"                     = Node Cons "(:)"
+    | n=="[]"                    = Node EmptyList "[]"
+    | isFunc info                = Node Fun "λ"
     | itabType info == ARR_WORDS = Node ArrWords "arrwords"
-    | isArrPtrs info = Node ArrPtrs "arrpt"
-    | otherwise = Node (Vanilla n) . show $ itabType info
+    | isArrPtrs info             = Node ArrPtrs "arrpt"
+    | otherwise                  = Node (Vanilla n) . show $ itabType info
     where n = nodeName node
 
 

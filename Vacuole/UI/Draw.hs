@@ -101,7 +101,7 @@ arrowDef = do
   p <- paper
   a <- path "M0,-7 L15,0 L0,7" p
   setAttrs [(Class,"arrow"), (Transform, scale s)] a
-  marker (0,-7) (15,14) (round $ fromIntegral(alen)*s/2,0) a
+  marker (0,-7) (15,14) (round $ fromIntegral alen * s / 2, 0) a
       where
         alen = 15
         s = 1/3
