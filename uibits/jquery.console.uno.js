@@ -37,6 +37,10 @@
 //   Safari 4.0.5 (6531.22.7) (Mac)
 //   Google Chrome 5.0.375.55 (Mac)
 
+// Modified 2013 (c) Anton Nikishaev
+
+
+
 (function($){
 	var isWebkit = !!~navigator.userAgent.indexOf(' AppleWebKit/');
 
