@@ -5,13 +5,15 @@ import Data.Char
 import Data.IntMap.Strict (elems,mapWithKey,notMember)
 import qualified Data.ByteString.Lazy.Char8 as BS
 import Vacuole.Interp
+import qualified Vacuole.Interp.Mu as Mu
+
 import Vacuole.View.Types
 import qualified GHC.Vacuum.ClosureType as Closure (isFun)
 import GHC.Vacuum.ClosureType
 
 
 boo :: String -> IO (Either String GraphView)
-boo s = do vvv <- vacuumise s
+boo s = do vvv <- Mu.vacuumise s
            return $ case vvv of
                       Left e  -> Left $ show e
                       Right v -> Right $ nodesLinks v

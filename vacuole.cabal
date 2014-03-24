@@ -65,7 +65,8 @@ executable vacuole
   main-is:             Vacuole/Serve.hs
   
   -- Modules included in this executable, other than Main.
-  other-modules:       Vacuole.Interp, Vacuole.Prelude, Vacuole.View,
+  other-modules:       Vacuole.Interp, Vacuole.Interp.Mu,
+                       Vacuole.Prelude, Vacuole.View,
                        Vacuole.View.Types, Vacuole.Serve
   
   -- LANGUAGE extensions used by modules in this package.
