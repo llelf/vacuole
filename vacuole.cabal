@@ -74,10 +74,13 @@ executable vacuole
   
   -- Other library packages from which modules are imported.
   build-depends:       base >=4.6, hint >=0.3, containers >=0.5,
-                       scotty >=0.5, wai-middleware-static >=0.3,
+                       scotty >=0.7, wai-middleware-static >=0.3,
+                       wai-extra >= 2.0.3,
                        text >=0.11, aeson >= 0.6.2,
                        ghc-prim >=0.3, vacuum >= 2.1.0.1,
-                       transformers >= 0.3, bytestring >= 0.10
+                       transformers >= 0.3, bytestring >= 0.10,
+                       time >= 1.4, sqlite-simple >= 0.4.5
+
   
   -- Directories containing source files.
   -- hs-source-dirs:      
