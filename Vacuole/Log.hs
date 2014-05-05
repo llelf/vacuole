@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Vacuole.Log (logExpr) where
 
 import Database.SQLite.Simple
