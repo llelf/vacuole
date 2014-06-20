@@ -29,8 +29,10 @@ imports = [
  ("Prelude", Nothing),
  ("Data.List", Just "L"),
  ("Data.Map", Just "Map"),
+ ("Data.Set", Just "Set"),
  ("Data.Vector", Just "Vector"),
- ("Data.Text", Just "Text")
+ ("Data.Text", Just "Text"),
+ ("Data.Ratio", Nothing)
  ]
 
 
