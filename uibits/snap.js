@@ -16,7 +16,10 @@ var Force;
 function initD3 (linkStr)
 {
   var w = $(window).width() - 100;
-  var h = 500;
+  var h = Math.min(500, $(window).height() - 200);
+
+  $('#snap').attr('width', w).attr('height', h);
+
   Force = d3.layout.force().size([w,h]);
   Force.linkStrength(function(l) {
     var r = A(linkStr, [[0,l.id], 0]);
